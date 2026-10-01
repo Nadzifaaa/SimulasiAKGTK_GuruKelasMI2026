@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMULASI AKGTK GURU KELAS MI 2026</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        accent: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js for competency visuals -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="min-h-screen flex flex-col justify-between">
+        
+        <!-- HEADER (Hidden on Login Screen) -->
+        <header id="main-header" class="hidden bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="appState.navigateTo('dashboard')">
+                    <div class="bg-brand-600 text-white p-2 rounded-xl shadow-md">
+                        <i data-lucide="book-open-check" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold leading-none text-slate-900 tracking-tight">SIMULASI AKGTK</h1>
+                        <p class="text-xs text-slate-500 font-medium">GURU KELAS MI 2026</p>
+                    </div>
+                </div>
+
+                <!-- User Profile & Navigation -->
+                <div class="flex items-center gap-4">
+                    <div id="header-user-info" class="hidden md:flex items-center gap-3 bg-slate-50 border border-slate-200 py-1.5 px-3 rounded-full">
+                        <div class="w-7 h-7 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center text-xs" id="header-avatar">
+                            G
+                        </div>
+                        <span class="text-xs font-semibold text-slate-700" id="header-username">Peserta</span>
+                        <button onclick="appState.showChangeNameModal()" class="text-xs text-brand-600 hover:text-brand-800 font-semibold border-l border-slate-200 pl-2">
+                            Ganti Nama
+                        </button>
+                    </div>
+                    
+                    <button id="nav-btn-dashboard" onclick="appState.navigateTo('dashboard')" class="p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Dashboard">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    </button>
+                    <button id="nav-btn-history" onclick="appState.navigateTo('history')" class="p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Hasil & Progres">
+                        <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                    </button>
+                    <button id="nav-btn-guide" onclick="appState.navigateTo('guide')" class="p-2 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded-lg transition" title="Panduan">
+                        <i data-lucide="help-circle" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <main class="flex-grow">
+            
+            <!-- 1. LOGIN SCREEN -->
+            <section id="view-login" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-brand-950 p-4">
+                <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 p-6 sm:p-8">
+                    <!-- Title Block -->
+                    <div class="text-center mb-6">
+                        <div class="inline-flex p-3 bg-brand-50 text-brand-600 rounded-2xl mb-3 shadow-inner">
+                            <i data-lucide="award" class="w-10 h-10"></i>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">SIMULASI AKGTK</h2>
+                        <p class="text-sm font-bold text-brand-600">GURU KELAS MI 2026</p>
+                        <p class="text-xs text-slate-500 mt-1 font-medium">Latihan • Uji Coba • Kenali Kemampuanmu</p>
+                    </div>
+
+                    <!-- Alert message -->
+                    <div id="login-error" class="hidden mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                        <span id="login-error-text"></span>
+                    </div>
+
+                    <!-- Form -->
+                    <form id="login-form" onsubmit="appState.handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">MASUK KE SIMULASI</label>
+                            <label for="login-name" class="block text-xs text-slate-500 mb-1">Nama Peserta</label>
+                            <div class="relative">
+                                <i data-lucide="user" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                                <input type="text" id="login-name" required placeholder="Ketik nama Anda" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="login-password" class="block text-xs text-slate-500 mb-1">Password</label>
+                            <div class="relative">
+                                <i data-lucide="lock" class="w-4 h-4 absolute left-3 top-3 text-slate-400"></i>
+                                <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition outline-none">
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1.5 font-medium flex items-center gap-1">
+                                <i data-lucide="info" class="w-3 h-3 text-brand-600"></i>
+                                Password uji coba: <span class="font-bold text-slate-700">123456</span>
+                            </p>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition duration-200 flex items-center justify-center gap-2">
+                            <span>MASUK</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+
+                    <!-- Disclaimer & Footer -->
+                    <div class="mt-6 pt-4 border-t border-slate-100 text-center space-y-3">
+                        <p class="text-xs text-slate-500 leading-relaxed">
+                            Aplikasi ini merupakan simulasi/uji coba mandiri sebagai gambaran latihan menghadapi AKGTK, bukan aplikasi resmi.
+                        </p>
+                        <p class="text-[11px] text-slate-400 font-semibold tracking-wider uppercase">
+                            Owned by Nadzifaa · 2026
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. DASHBOARD SCREEN -->
+            <section id="view-dashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+                
+                <!-- Welcome Banner -->
+                <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-brand-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute right-0 top-0 translate-x-8 -translate-y-8 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="relative z-10 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-300 backdrop-blur-md text-xs font-semibold mb-3">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                            <span>Simulasi Mandiri Guru Kelas MI</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                            Halo, <span id="dash-user-name" class="text-brand-400">Guru</span>! 👋
+                        </h2>
+                        <p class="text-slate-300 mt-1 text-sm sm:text-base">
+                            Siap latihan hari ini? "Latihan dulu. Biar nanti ketika ujian sudah siap."
+                        </p>
+                        <div class="mt-4 flex flex-wrap items-center gap-3">
+                            <span class="text-xs bg-brand-900/80 border border-brand-700/50 text-brand-200 px-3 py-1 rounded-lg">
+                                📚 Bank Soal Berkelanjutan
+                            </span>
+                            <span class="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1 rounded-lg">
+                                ⏱️ Timer CBT Realistis
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Modes Grid -->
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-5 h-5 text-brand-600"></i>
+                        Pilihan Mode Simulasi
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        
+                        <!-- CARD 1: SIMULASI PENUH -->
+                        <div onclick="appState.startFullSimulationPrep()" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-500 transition duration-300 cursor-pointer flex flex-col justify-between group">
+                            <div>
+                                <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                                    <i data-lucide="flame" class="w-6 h-6"></i>
+                                </div>
+                                <span class="text-xs font-bold text-red-600 uppercase tracking-wider">Mode CBT Standar</span>
+                                <h4 class="text-xl font-bold text-slate-900 mt-1 group-hover:text-brand-600 transition">🔥 SIMULASI PENUH</h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    Simulasi 60 soal dengan timer 90 menit. Komposisi terstandar untuk membiasakan ujian sungguhan.
+                                </p>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700">
+                                <span class="flex items-center gap-1"><i data-lucide="help-circle" class="w-3.5 h-3.5"></i> 60 Soal</span>
+                                <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i> 90 Menit</span>
+                            </div>
+                        </div>
+
+                        <!-- CARD 2: LATIHAN PER MATERI -->
+                        <div onclick="appState.navigateTo('mode-practice')" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-500 transition duration-300 cursor-pointer flex flex-col justify-between group">
+                            <div>
+                                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                                    <i data-lucide="brain" class="w-6 h-6"></i>
+                                </div>
+                                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Latihan Fleksibel</span>
+                                <h4 class="text-xl font-bold text-slate-900 mt-1 group-hover:text-brand-600 transition">🧠 LATIHAN PER MATERI</h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    Pilih kompetensi spesifik, tingkat kesulitan (Dasar, Menengah, HOTS), serta jumlah soal sesuai kebutuhan.
+                                </p>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700">
+                                <span>6 Kompetensi</span>
+                                <span>10 - 40 Soal</span>
+                            </div>
+                        </div>
+
+                        <!-- CARD 3: DIAGNOSTIC TEST -->
+                        <div onclick="appState.startDiagnosticPrep()" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-500 transition duration-300 cursor-pointer flex flex-col justify-between group">
+                            <div>
+                                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                                    <i data-lucide="target" class="w-6 h-6"></i>
+                                </div>
+                                <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Pemetaan Awal</span>
+                                <h4 class="text-xl font-bold text-slate-900 mt-1 group-hover:text-brand-600 transition">🎯 DIAGNOSTIC TEST</h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    20 soal cepat untuk mengukur profil kemampuan awal dan mengenali kompetensi yang perlu diperkuat.
+                                </p>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700">
+                                <span>20 Soal Pemetaan</span>
+                                <span>Tanpa Batas Lulus</span>
+                            </div>
+                        </div>
+
+                        <!-- CARD 4: HASIL & PROGRES -->
+                        <div onclick="appState.navigateTo('history')" class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-500 transition duration-300 cursor-pointer flex flex-col justify-between group">
+                            <div>
+                                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                                    <i data-lucide="line-chart" class="w-6 h-6"></i>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Rekam Jejak</span>
+                                <h4 class="text-xl font-bold text-slate-900 mt-1 group-hover:text-brand-600 transition">📊 HASIL & PROGRES</h4>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                                    Pantau statistik perkembangan nilai, riwayat simulasi, dan analisis kelemahan kompetensi Anda.
+                                </p>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-700">
+                                <span id="dash-history-count">0 Riwayat</span>
+                                <span class="text-brand-600">Lihat Detail &rarr;</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Competency Area Quick Info -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                    <h4 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-brand-600"></i>
+                        6 Area Kompetensi Guru Kelas MI
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                            <span class="text-xs font-bold text-slate-700 block">Pedagogik</span>
+                            <span class="text-[11px] text-slate-500">Strategi & Asesmen</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                            <span class="text-xs font-bold text-slate-700 block">Literasi</span>
+                            <span class="text-[11px] text-slate-500">Teks & Evaluasi</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                            <span class="text-xs font-bold text-slate-700 block">Numerasi</span>
+                            <span class="text-[11px] text-slate-500">Penalaran & Data</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                            <span class="text-xs font-bold text-slate-700 block">Sains</span>
+                            <span class="text-[11px] text-slate-500">Fenomena & Konsep</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                            <span class="text-xs font-bold text-slate-700 block">Profesional MI</span>
+                            <span class="text-[11px] text-slate-500">Materi Terintegrasi</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                            <span class="text-xs font-bold text-slate-700 block">Moderasi Beragama</span>
+                            <span class="text-[11px] text-slate-500">Sikap & Toleransi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer info block -->
+                <div class="text-center pt-4 text-xs text-slate-500 border-t border-slate-200">
+                    <p>Simulasi/uji coba mandiri — bukan aplikasi resmi.</p>
+                    <p class="font-semibold text-slate-600 mt-1">Owned by Nadzifaa · 2026</p>
+                </div>
+            </section>
+
+            <!-- 3. PRACTICE SETUP SCREEN -->
+            <section id="view-mode-practice" class="hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                <div class="flex items-center gap-3">
+                    <button onclick="appState.navigateTo('dashboard')" class="p-2 hover:bg-slate-200 rounded-xl transition">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">🧠 Latihan Per Materi</h2>
+                        <p class="text-xs text-slate-500">Kustomisasi sesi latihan sesuai kebutuhan pemahaman Anda.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    
+                    <!-- Select Category -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-2">1. Pilih Kompetensi</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <button onclick="practiceForm.setCategory('ALL')" class="category-btn active p-3 rounded-xl border text-xs font-bold text-left transition border-brand-500 bg-brand-50 text-brand-700" data-cat="ALL">
+                                ✨ Semua Kompetensi
+                            </button>
+                            <button onclick="practiceForm.setCategory('PEDAGOGIK')" class="category-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-left transition text-slate-700 hover:bg-slate-50" data-cat="PEDAGOGIK">
+                                📘 Pedagogik
+                            </button>
+                            <button onclick="practiceForm.setCategory('LITERASI')" class="category-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-left transition text-slate-700 hover:bg-slate-50" data-cat="LITERASI">
+                                📖 Literasi
+                            </button>
+                            <button onclick="practiceForm.setCategory('NUMERASI')" class="category-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-left transition text-slate-700 hover:bg-slate-50" data-cat="NUMERASI">
+                                🔢 Numerasi
+                            </button>
+                            <button onclick="practiceForm.setCategory('SAINS')" class="category-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-left transition text-slate-700 hover:bg-slate-50" data-cat="SAINS">
+                                🔬 Sains
+                            </button>
+                            <button onclick="practiceForm.setCategory('PROFESIONAL')" class="category-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-left transition text-slate-700 hover:bg-slate-50" data-cat="PROFESIONAL">
+                                🎓 Profesional Guru Kelas
+                            </button>
+                            <button onclick="practiceForm.setCategory('MODERASI_BERAGAMA')" class="category-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-left transition text-slate-700 hover:bg-slate-50" data-cat="MODERASI_BERAGAMA">
+                                🕊️️ Moderasi Beragama
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Select Difficulty -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-2">2. Tingkat Kesulitan</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <button onclick="practiceForm.setDifficulty('MIX')" class="diff-btn active p-3 rounded-xl border text-xs font-bold text-center transition border-brand-500 bg-brand-50 text-brand-700" data-diff="MIX">
+                                🌿 Campuran
+                            </button>
+                            <button onclick="practiceForm.setDifficulty('BASIC')" class="diff-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50" data-diff="BASIC">
+                                🌱 Dasar
+                            </button>
+                            <button onclick="practiceForm.setDifficulty('MEDIUM')" class="diff-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50" data-diff="MEDIUM">
+                                🍃 Menengah
+                            </button>
+                            <button onclick="practiceForm.setDifficulty('HOTS')" class="diff-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50" data-diff="HOTS">
+                                🔥 HOTS
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Select Question Count -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-2">3. Jumlah Soal</label>
+                        <div class="grid grid-cols-4 gap-3">
+                            <button onclick="practiceForm.setCount(10)" class="count-btn active p-3 rounded-xl border text-xs font-bold text-center transition border-brand-500 bg-brand-50 text-brand-700" data-count="10">10 Soal</button>
+                            <button onclick="practiceForm.setCount(20)" class="count-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50" data-count="20">20 Soal</button>
+                            <button onclick="practiceForm.setCount(30)" class="count-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50" data-count="30">30 Soal</button>
+                            <button onclick="practiceForm.setCount(40)" class="count-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50" data-count="40">40 Soal</button>
+                        </div>
+                    </div>
+
+                    <!-- Additional Option: Instant Feedback -->
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 block">Tampilkan Pembahasan Langsung</span>
+                            <span class="text-[11px] text-slate-500">Melihat penjelasan setelah menjawab setiap soal</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="practice-instant-explanation" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                        </label>
+                    </div>
+
+                    <button onclick="practiceForm.start()" class="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition flex items-center justify-center gap-2">
+                        <span>MULAI LATIHAN</span>
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4. CBT PREPARATION / CONFIRMATION SCREEN -->
+            <section id="view-cbt-prep" class="hidden max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl space-y-6">
+                    <div class="text-center">
+                        <div class="inline-flex p-3 bg-brand-50 text-brand-600 rounded-2xl mb-3">
+                            <i data-lucide="shield-alert" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-slate-900" id="prep-title">SIMULASI AKGTK</h3>
+                        <p class="text-xs text-brand-600 font-bold mt-1">GURU KELAS MI 2026</p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-3 text-xs">
+                        <div class="flex justify-between py-1 border-b border-slate-200">
+                            <span class="text-slate-500">Nama Peserta:</span>
+                            <span class="font-bold text-slate-900" id="prep-username">-</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-200">
+                            <span class="text-slate-500">Jumlah Soal:</span>
+                            <span class="font-bold text-slate-900" id="prep-questions-count">60 Soal</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-200">
+                            <span class="text-slate-500">Alokasi Waktu:</span>
+                            <span class="font-bold text-slate-900" id="prep-duration">90 Menit</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-slate-200">
+                            <span class="text-slate-500">Mode:</span>
+                            <span class="font-bold text-slate-900" id="prep-mode-label">Simulasi Penuh</span>
+                        </div>
+                        <div class="flex justify-between py-1">
+                            <span class="text-slate-500">Tingkat Kesulitan:</span>
+                            <span class="font-bold text-slate-900" id="prep-difficulty">Campuran (Dasar, Menengah, HOTS)</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-xs text-amber-800 flex items-start gap-3">
+                        <i data-lucide="info" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+                        <div class="space-y-1">
+                            <p class="font-bold">Ketentuan Simulasi CBT:</p>
+                            <p>• Timer akan berjalan begitu tombol 'MULAI SIMULASI' ditekan.</p>
+                            <p>• Anda dapat menandai ragu-ragu dan mengubah jawaban sebelum dikirim.</p>
+                            <p>• Jawaban akan terkirim otomatis apabila waktu habis (00:00).</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="appState.navigateTo('dashboard')" class="w-1/3 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl transition text-xs">
+                            BATAL
+                        </button>
+                        <button onclick="appState.launchExam()" class="w-2/3 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition text-xs flex items-center justify-center gap-2">
+                            <span>MULAI SIMULASI</span>
+                            <i data-lucide="play-circle" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. CBT EXAM INTERFACE SCREEN -->
+            <section id="view-cbt-exam" class="hidden min-h-screen bg-slate-100 flex flex-col">
+                
+                <!-- Exam Top Bar -->
+                <div class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-20 shadow-md">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-brand-600 p-1.5 rounded-lg">
+                                <i data-lucide="file-text" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-sm font-bold tracking-wide" id="cbt-header-title">SIMULASI AKGTK 2026</h1>
+                                <p class="text-[10px] text-slate-400" id="cbt-header-subtitle">Guru Kelas MI · Simulasi Mandiri</p>
+                            </div>
+                        </div>
+
+                        <!-- Timer Display -->
+                        <div class="flex items-center gap-4">
+                            <div id="cbt-timer-container" class="bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl flex items-center gap-2 text-brand-400 font-mono font-bold text-base sm:text-lg">
+                                <i data-lucide="clock" class="w-4 h-4 text-brand-500 animate-pulse"></i>
+                                <span id="cbt-timer-text">90:00</span>
+                            </div>
+
+                            <button onclick="cbtEngine.openFinishModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">SELESAI UJIAN</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main CBT Layout (Sidebar Grid + Question View) -->
+                <div class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    <!-- LEFT / MAIN: Question & Answers Container (col-span-8) -->
+                    <div class="lg:col-span-8 flex flex-col justify-between bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                        
+                        <div>
+                            <!-- Question Meta Banner -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4 mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-brand-50 text-brand-700 text-xs font-bold rounded-lg" id="cbt-question-number-badge">
+                                        Soal 01
+                                    </span>
+                                    <span class="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg" id="cbt-question-category">
+                                        PEDAGOGIK
+                                    </span>
+                                    <span class="px-2.5 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg" id="cbt-question-level">
+                                        HOTS
+                                    </span>
+                                </div>
+
+                                <!-- Flag Question Toggle -->
+                                <button id="cbt-flag-btn" onclick="cbtEngine.toggleFlag()" class="px-3 py-1.5 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-xl transition flex items-center gap-1.5">
+                                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                                    <span id="cbt-flag-text">Tandai Ragu-ragu</span>
+                                </button>
+                            </div>
+
+                            <!-- Stimulus / Case Scenario Area -->
+                            <div id="cbt-stimulus-container" class="hidden mb-4 p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed font-serif">
+                                <!-- Stimulus content injected here -->
+                            </div>
+
+                            <!-- Question Text -->
+                            <div id="cbt-question-text" class="text-sm sm:text-base font-semibold text-slate-900 leading-relaxed mb-6">
+                                Loading soal...
+                            </div>
+
+                            <!-- Options A, B, C, D List -->
+                            <div id="cbt-options-container" class="space-y-3">
+                                <!-- Options rendered via JS -->
+                            </div>
+
+                            <!-- Instant Explanation Container (For Practice Mode) -->
+                            <div id="cbt-explanation-box" class="hidden mt-6 p-4 rounded-xl border bg-blue-50 border-blue-200 text-xs space-y-2">
+                                <div class="font-bold text-blue-900 flex items-center gap-1.5">
+                                    <i data-lucide="info" class="w-4 h-4 text-blue-600"></i>
+                                    <span>PEMBAHASAN SOAL</span>
+                                </div>
+                                <p id="cbt-explanation-text" class="text-slate-700 leading-relaxed"></p>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Footer Buttons -->
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                            <button id="cbt-btn-prev" onclick="cbtEngine.prevQuestion()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                <span>SEBELUMNYA</span>
+                            </button>
+
+                            <button id="cbt-btn-next" onclick="cbtEngine.nextQuestion()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-1">
+                                <span>BERIKUTNYA</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT / SIDEBAR: Question Navigation Grid (col-span-4) -->
+                    <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center justify-between">
+                                <span>NAVIGASI SOAL</span>
+                                <span id="cbt-answered-summary" class="text-[11px] font-semibold text-slate-500">0/60</span>
+                            </h3>
+
+                            <!-- Status Indicators Legend -->
+                            <div class="grid grid-cols-2 gap-2 mb-4 text-[11px] text-slate-600">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-3 h-3 rounded-md bg-slate-100 border border-slate-300 inline-block"></span>
+                                    <span>⚪ Belum dijawab</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-3 h-3 rounded-md bg-emerald-600 inline-block"></span>
+                                    <span>🟢 Sudah dijawab</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-3 h-3 rounded-md bg-amber-400 inline-block"></span>
+                                    <span>🟡 Ragu-ragu</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-3 h-3 rounded-md bg-slate-900 inline-block"></span>
+                                    <span>🔵 Soal Aktif</span>
+                                </div>
+                            </div>
+
+                            <!-- Question Grid Buttons -->
+                            <div id="cbt-question-grid" class="grid grid-cols-5 sm:grid-cols-6 gap-2 max-h-80 overflow-y-auto custom-scrollbar p-1">
+                                <!-- Grid items populated via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Submit Button on Navigation Drawer -->
+                        <div class="mt-6 pt-4 border-t border-slate-100">
+                            <button onclick="cbtEngine.openFinishModal()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                                <span>AKHIRI SIMULASI UJIAN</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- 6. RESULTS & REVIEW SCREEN -->
+            <section id="view-cbt-result" class="hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+                
+                <!-- Top Summary Card -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-lg text-center space-y-4">
+                    <div class="inline-flex p-3 bg-brand-50 text-brand-600 rounded-2xl">
+                        <i data-lucide="trophy" class="w-10 h-10"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-slate-900">HASIL SIMULASI AKGTK</h2>
+                        <p class="text-xs text-slate-500 mt-1">Peserta: <span id="res-username" class="font-bold text-slate-800">-</span> • Waktu Pengerjaan: <span id="res-time-spent" class="font-bold text-slate-800">00:00</span></p>
+                    </div>
+
+                    <!-- Big Score Display -->
+                    <div class="py-4">
+                        <div class="inline-block bg-slate-900 text-white px-8 py-4 rounded-3xl shadow-xl">
+                            <span class="text-xs font-bold text-slate-400 block uppercase tracking-wider">SKOR AKGTK</span>
+                            <span class="text-4xl sm:text-5xl font-black text-brand-400" id="res-score-num">0</span>
+                            <span class="text-xs text-slate-400 font-bold">/ 100</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-2 italic">
+                            Skor ini merupakan hasil simulasi latihan dan bukan hasil asesmen resmi.
+                        </p>
+                    </div>
+
+                    <!-- Answer Counts -->
+                    <div class="grid grid-cols-3 gap-3 max-w-lg mx-auto text-xs font-semibold">
+                        <div class="p-3 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-100">
+                            <span class="block text-lg font-extrabold" id="res-correct-count">0</span>
+                            <span>Benar</span>
+                        </div>
+                        <div class="p-3 bg-red-50 text-red-700 rounded-2xl border border-red-100">
+                            <span class="block text-lg font-extrabold" id="res-wrong-count">0</span>
+                            <span>Salah</span>
+                        </div>
+                        <div class="p-3 bg-slate-100 text-slate-700 rounded-2xl border border-slate-200">
+                            <span class="block text-lg font-extrabold" id="res-unanswered-count">0</span>
+                            <span>Kosong</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competency Breakdown Section -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 text-brand-600"></i>
+                        PROFIL KOMPETENSI GURU KELAS MI
+                    </h3>
+
+                    <!-- Bars -->
+                    <div id="res-competency-bars" class="space-y-4">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Weak Area Analysis & Recommendations -->
+                <div class="bg-amber-50/60 rounded-3xl p-6 sm:p-8 border border-amber-200 shadow-sm space-y-4">
+                    <div class="flex items-center gap-2 text-amber-900 font-bold text-sm">
+                        <i data-lucide="compass" class="w-5 h-5 text-amber-600"></i>
+                        <span>ANALISIS & REKOMENDASI BELAJAR</span>
+                    </div>
+
+                    <div id="res-weak-areas-list" class="space-y-2 text-xs text-slate-700">
+                        <!-- Populated via JS -->
+                    </div>
+
+                    <div class="p-4 bg-white/80 rounded-2xl border border-amber-200 text-xs text-slate-700 leading-relaxed font-medium" id="res-recommendation-text">
+                        <!-- Recommendation text -->
+                    </div>
+                </div>
+
+                <!-- Complete Review / Pembahasan Questions List -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="book-open" class="w-5 h-5 text-brand-600"></i>
+                            PEMBAHASAN LENGKAP SOAL
+                        </h3>
+                        <span class="text-xs text-slate-500 font-semibold">Tinjau Setiap Soal</span>
+                    </div>
+
+                    <div id="res-review-container" class="space-y-6">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <button onclick="appState.navigateTo('dashboard')" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2">
+                        <i data-lucide="home" class="w-4 h-4"></i>
+                        <span>KEMBALI KE DASHBOARD</span>
+                    </button>
+                    <button onclick="appState.navigateTo('history')" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2">
+                        <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                        <span>LIHAT RIWAYAT & PROGRES</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 7. HISTORY & PROGRESS SCREEN -->
+            <section id="view-history" class="hidden max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">📊 Hasil & Progres</h2>
+                        <p class="text-xs text-slate-500">Pantau perkembangan nilai dan akumulasi latihan Anda.</p>
+                    </div>
+                    <button onclick="historyEngine.clearHistory()" class="text-xs text-red-600 hover:text-red-800 font-semibold underline">
+                        Hapus Riwayat
+                    </button>
+                </div>
+
+                <!-- Overall Stats Banner -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm">
+                        <span class="text-xs font-semibold text-slate-500 block">Total Simulasi</span>
+                        <span id="hist-stat-total" class="text-2xl font-black text-slate-900 mt-1 block">0</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm">
+                        <span class="text-xs font-semibold text-slate-500 block">Rata-rata Skor</span>
+                        <span id="hist-stat-avg" class="text-2xl font-black text-brand-600 mt-1 block">0</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm">
+                        <span class="text-xs font-semibold text-slate-500 block">Skor Tertinggi</span>
+                        <span id="hist-stat-highest" class="text-2xl font-black text-emerald-600 mt-1 block">0</span>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm">
+                        <span class="text-xs font-semibold text-slate-500 block">Soal Dikerjakan</span>
+                        <span id="hist-stat-questions" class="text-2xl font-black text-blue-600 mt-1 block">0</span>
+                    </div>
+                </div>
+
+                <!-- History Table / Cards -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Riwayat Pengerjaan</h3>
+                    <div id="history-list-container" class="space-y-3">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. GUIDE SCREEN -->
+            <section id="view-guide" class="hidden max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">📖 Panduan Simulasi AKGTK</h2>
+                    <p class="text-xs text-slate-500">Petunjuk teknis dan strategi sukses mengerjakan asesmen CBT.</p>
+                </div>
+
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    <div class="space-y-2">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-brand-600"></i>
+                            Tujuan Platform
+                        </h3>
+                        <p>
+                            Platform ini dirancang khusus untuk Guru Kelas Madrasah Ibtidaiyah (MI) guna membiasakan diri dengan format Computer Based Test (CBT), menguji literasi, numerasi, literasi sains, pedagogik, materi profesional, dan sikap moderasi beragama.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-100">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="clock" class="w-5 h-5 text-brand-600"></i>
+                            Strategi Manajemen Waktu (90 Menit / 60 Soal)
+                        </h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Rata-rata waktu per soal adalah 1,5 menit (90 detik).</li>
+                            <li>Gunakan fitur <strong>Tandai Ragu-ragu</strong> untuk soal yang membutuhkan perhitungan atau bacaan panjang.</li>
+                            <li>Jangan terpaku pada satu soal HOTS berlarut-larut. Kerjakan soal yang lebih cepat terlebih dahulu.</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-100">
+                        <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="compass" class="w-5 h-5 text-brand-600"></i>
+                            Kategori Kompetensi
+                        </h3>
+                        <p><strong>1. Pedagogik:</strong> Kasus pembelajaran berdiferensiasi, asesmen formatif/diagnostik, pengelolaan kelas.</p>
+                        <p><strong>2. Literasi:</strong> Penalaran teks, interpretasi grafik/tabel, evaluasi argumen konteks madrasah.</p>
+                        <p><strong>3. Numerasi:</strong> Operasi matematika penalaran, estimasi, anggaran kelas, perbandingan.</p>
+                        <p><strong>4. Sains:</strong> Fenomena alam, sistem manusia, lingkungan, ekosistem MI.</p>
+                        <p><strong>5. Profesional Guru Kelas:</strong> Pengambilan keputusan kurikuler dan sintesis lintas bidang.</p>
+                        <p><strong>6. Moderasi Beragama:</strong> Sikap toleransi, kebangsaan, dan resolusi konflik pendidikan.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- FOOTER (Global) -->
+        <footer id="main-footer" class="hidden bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+            <p>Simulasi/uji coba mandiri — bukan aplikasi resmi.</p>
+            <p class="font-semibold text-slate-600 mt-0.5">Owned by Nadzifaa · 2026</p>
+        </footer>
+    </div>
+
+    <!-- MODALS CONTAINER -->
+    <!-- 1. Change Name Modal -->
+    <div id="modal-change-name" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm border border-slate-200 shadow-2xl space-y-4">
+            <h3 class="text-base font-bold text-slate-900">Ganti Nama Peserta</h3>
+            <input type="text" id="change-name-input" class="w-full px-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500">
+            <div class="flex justify-end gap-2">
+                <button onclick="appState.closeChangeNameModal()" class="px-4 py-2 border rounded-xl text-xs font-semibold text-slate-600">Batal</button>
+                <button onclick="appState.saveNewName()" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-xs font-bold">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Submit Exam Confirmation Modal -->
+    <div id="modal-finish-exam" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md border border-slate-200 shadow-2xl space-y-6">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i data-lucide="help-circle" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-extrabold text-slate-900">Akhiri Ujian Simulasi?</h3>
+                <p class="text-xs text-slate-500 mt-1">Apakah Anda yakin ingin mengakhiri simulasi ini sekarang?</p>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-2xl space-y-2 text-xs font-semibold">
+                <div class="flex justify-between text-slate-700">
+                    <span>Sudah dijawab:</span>
+                    <span class="text-emerald-600 font-bold" id="finish-answered-count">0</span>
+                </div>
+                <div class="flex justify-between text-slate-700">
+                    <span>Belum dijawab:</span>
+                    <span class="text-red-600 font-bold" id="finish-unanswered-count">0</span>
+                </div>
+                <div class="flex justify-between text-slate-700">
+                    <span>Tandai ragu-ragu:</span>
+                    <span class="text-amber-600 font-bold" id="finish-flagged-count">0</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="cbtEngine.closeFinishModal()" class="w-1/2 py-3 border border-slate-300 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs">
+                    KEMBALI KE UJIAN
+                </button>
+                <button onclick="cbtEngine.submitExam()" class="w-1/2 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow text-xs">
+                    AKHIRI SIMULASI
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        /*
+         * CONFIGURATION & QUESTION BANK
+         */
+        const CONFIG = {
+            TOTAL_SIMULATION_QUESTIONS: 60,
+            SIMULATION_DURATION_MINUTES: 90,
+            DIAGNOSTIC_QUESTIONS: 20,
+            PRACTICE_OPTIONS: [10, 20, 30, 40],
+            DIFFICULTY_DISTRIBUTION: {
+                BASIC: 0.35,  // ~21 questions
+                MEDIUM: 0.40, // ~24 questions
+                HOTS: 0.25    // ~15 questions
+            },
+            COMPOSITION: {
+                PEDAGOGIK: 10,
+                LITERASI: 12,
+                NUMERASI: 12,
+                SAINS: 12,
+                PROFESIONAL: 8,
+                MODERASI_BERAGAMA: 6
+            }
+        };
+
+        // Master Question Data Bank for MI Class Teachers
+        const QUESTION_BANK = [
+            // --- PEDAGOGIK ---
+            {
+                id: "PED-01",
+                category: "PEDAGOGIK",
+                difficulty: "HOTS",
+                competency: "Pembelajaran Berdiferensiasi",
+                stimulus: "Pak Ahmad mengajar di kelas IV MI. Ia mengidentifikasi bahwa 30% siswanya menyukai modalitas visual, 40% kinestetik melalui aktivitas langsung, dan 30% audio-verbal. Pada materi Rantai Makanan, Pak Ahmad ingin menerapkan pembelajaran berdiferensiasi proses.",
+                question: "Langkah terbaik yang harus dilakukan Pak Ahmad agar memenuhi kebutuhan belajar seluruh peserta didik adalah...",
+                options: [
+                    "Memberikan lembar kerja tulisan yang sama tetapi membedakan bobot nilai untuk setiap kelompok siswa.",
+                    "Menyediakan diagram bergambar, stasiun peran organisme, serta rekaman penjelasan singkat untuk dipilih siswa.",
+                    "Mewajibkan semua siswa membuat bagan mewarnai kemudian mempresentasikan secara lisan di depan kelas.",
+                    "Mengelompokkan siswa berdasarkan nilai rapor lalu memberikan tugas membuat makalah sains bagi kelompok pandai."
+                ],
+                correctAnswer: 1,
+                explanation: "Pembelajaran berdiferensiasi proses menyediakan ragam jalur aktivitas belajar (visual, kinestetik melalui stasiun peran, dan audio) sesuai profil belajar siswa tanpa menurunkan ekspektasi capaian."
+            },
+            {
+                id: "PED-02",
+                category: "PEDAGOGIK",
+                difficulty: "MEDIUM",
+                competency: "Asesmen Formatif",
+                stimulus: "Ibu Rahma menginginkan umpan balik cepat saat pembelajaran Matematika kelas III MI tentang pecahan sederhana berlangsung tanpa menunggu ujian akhir bab.",
+                question: "Bentuk asesmen formatif yang paling tepat diterapkan pada akhir sesi pembelajaran 15 menit terakhir adalah...",
+                options: [
+                    "Memberikan Soal Uji Kompetensi Akhir Semester untuk dikerjakan secara berkelompok.",
+                    "Menerapkan teknik 'Exit Ticket' berisi 2 soal ringkas untuk memeriksa pemahaman dasar siswa sebelum keluar kelas.",
+                    "Menugaskan siswa menghafal definisi pecahan sederhana dan menyetorkannya pada pertemuan berikutnya.",
+                    "Mengadakan tes tertulis pilihan ganda 20 soal dengan pengawasan ketat."
+                ],
+                correctAnswer: 1,
+                explanation: "Exit Ticket merupakan teknik asesmen formatif efektif untuk mengevaluasi pemahaman harian dengan cepat guna memberikan umpan balik langsung."
+            },
+            {
+                id: "PED-03",
+                category: "PEDAGOGIK",
+                difficulty: "BASIC",
+                competency: "Karakteristik Peserta Didik MI",
+                stimulus: "",
+                question: "Menurut teori perkembangan kognitif Piaget, anak usia Madrasah Ibtidaiyah (7–12 tahun) umumnya berada pada tahap...",
+                options: [
+                    "Sensorimotor",
+                    "Pra-operasional",
+                    "Operasional Konkret",
+                    "Operasional Formal"
+                ],
+                correctAnswer: 2,
+                explanation: "Anak MI berada pada tahap Operasional Konkret, di mana mereka membutuhkan manipulasi benda nyata/konkret untuk memahami konsep abstrak."
+            },
+            {
+                id: "PED-04",
+                category: "PEDAGOGIK",
+                difficulty: "HOTS",
+                competency: "Pengelolaan Kelas",
+                stimulus: "Saat pembelajaran kelompok IPS berlangsung di kelas V MI, terlihat satu kelompok yang didominasi oleh satu siswa pandai, sementara anggota kelompok lain cenderung pasif dan acuh.",
+                question: "Tindakan reflektif guru yang paling tepat untuk memperbaiki dinamika kelompok tersebut adalah...",
+                options: [
+                    "Membubarkan kelompok tersebut dan meminta mereka bekerja secara individu saja.",
+                    "Mengurangi nilai siswa yang pasif secara langsung di depan teman-temannya.",
+                    "Menerapkan struktur peran yang jelas (misal: ketua, pencatat, juru bicara, pengatur waktu) pada setiap anggota kelompok.",
+                    "Memindahkan siswa pandai tersebut ke kelompok lain yang lebih lemah."
+                ],
+                correctAnswer: 2,
+                explanation: "Pembagian peran terstruktur (cooperative learning roles) memastikan interdependensi positif dan tanggung jawab individu bagi semua anggota kelompok."
+            },
+            {
+                id: "PED-05",
+                category: "PEDAGOGIK",
+                difficulty: "MEDIUM",
+                competency: "Remedial & Pengayaan",
+                stimulus: "Hasil asesmen diagnostik materi Pecahan menunjukkan 65% siswa kelas IV belum mencapai kriteria ketuntasan.",
+                question: "Langkah pembelajaran remedial yang paling tepat dilaksanakan guru adalah...",
+                options: [
+                    "Memberikan tugas rumah dengan soal yang sama berulang kali.",
+                    "Menyelenggarakan pembelajaran ulang dengan metode dan media manipulatif yang berbeda bagi mayoritas siswa.",
+                    "Meminta siswa yang belum tuntas belajar mandiri bersama orang tua di rumah.",
+                    "Melanjutkan ke materi berikutnya dan memberikan remedial di akhir semester."
+                ],
+                correctAnswer: 1,
+                explanation: "Jika kegagalan mencapai >50%, guru hendaknya melakukan pembelajaran ulang (re-teaching) menggunakan pendekatan baru/media alternatif."
+            },
+            {
+                id: "PED-06",
+                category: "PEDAGOGIK",
+                difficulty: "BASIC",
+                competency: "Joyful Learning",
+                stimulus: "",
+                question: "Prinsip utama menciptakan suasana pembelajaran yang menyenangkan (Joyful Learning) di kelas awal MI adalah...",
+                options: [
+                    "Membiarkan siswa bermain bebas tanpa aturan kurikulum.",
+                    "Mengintegrasikan permainan edukatif, lagu, dan keterlibatan aktif siswa dalam suasana aman dan mendukung.",
+                    "Memberikan banyak hadiah berupa barang mahal kepada siswa setiap hari.",
+                    "Menghilangkan semua tugas tertulis dalam proses belajar."
+                ],
+                correctAnswer: 1,
+                explanation: "Joyful learning menggabungkan tujuan pembelajaran dengan metode interaktif, permainan bermakna, dan iklim positif."
+            },
+            {
+                id: "PED-07",
+                category: "PEDAGOGIK",
+                difficulty: "HOTS",
+                competency: "Mindful & Meaningful Learning",
+                stimulus: "Ibu Maryam ingin mengajarkan materi Kebersihan Lingkungan di kelas II MI agar berdampak pada kebiasaan nyata siswa sehari-hari.",
+                question: "Desain aktivitas belajar bermakna (meaningful learning) yang tepat adalah...",
+                options: [
+                    "Menugaskan siswa menghafal ayat tentang kebersihan beserta artinya.",
+                    "Ajak siswa mengamati sampah di sekitar madrasah, mengelompokkannya, dan membuat aksi 'Piket Lingkungan Bersama'.",
+                    "Memberikan tes tertulis 10 soal mengenai jenis-jenis sampah.",
+                    "Menampilkan gambar lingkungan bersih tanpa meminta tanggapan dari siswa."
+                ],
+                correctAnswer: 1,
+                explanation: "Meaningful learning menghubungkan pengetahuan dengan pengalaman konteks nyata siswa melalui aksi kontekstual."
+            },
+            {
+                id: "PED-08",
+                category: "PEDAGOGIK",
+                difficulty: "MEDIUM",
+                competency: "Refleksi Guru",
+                stimulus: "Setelah mengajar materi Bangun Datar, Pak Lukman mencatat bahwa sebagian besar siswa kesulitan membedakan persegi dan belah ketupat.",
+                question: "Manfaat utama kegiatan refleksi diri bagi Pak Lukman adalah...",
+                options: [
+                    "Mencari kesalahan siswa agar nilai ujian dapat dikurangi.",
+                    "Mengevaluasi efektivitas media dan strategi mengajar yang telah digunakan untuk perbaikan sesi berikutnya.",
+                    "Menyalahkan sarana prasarana madrasah yang kurang memadai.",
+                    "Mengubah standar kelulusan menjadi lebih rendah."
+                ],
+                correctAnswer: 1,
+                explanation: "Refleksi guru bertujuan mengevaluasi praktik pengajaran dan merencanakan perbaikan pedagogis berkesinambungan."
+            },
+            {
+                id: "PED-09",
+                category: "PEDAGOGIK",
+                difficulty: "BASIC",
+                competency: "Asesmen Diagnostik",
+                stimulus: "",
+                question: "Tujuan utama diterapkannya asesmen diagnostik kognitif di awal tahun ajaran baru adalah...",
+                options: [
+                    "Menentukan nilai kelulusan akhir semester siswa.",
+                    "Mengidentifikasi capaian kompetensi dasar dan pemetaan awal kemampuan siswa sebelum pembelajaran dimulai.",
+                    "Mengurutkan peringkat juara kelas.",
+                    "Memberikan hukuman bagi siswa yang nilainya paling rendah."
+                ],
+                correctAnswer: 1,
+                explanation: "Asesmen diagnostik bertujuan memetakan titik awal (baseline) kemampuan siswa untuk merancang pembelajaran berdiferensiasi."
+            },
+            {
+                id: "PED-10",
+                category: "PEDAGOGIK",
+                difficulty: "MEDIUM",
+                competency: "Umpan Balik Kontruktif",
+                stimulus: "Seorang siswa MI menyerahkan karangan deskripsi yang mengandung beberapa kesalahan ejaan dan tanda baca.",
+                question: "Bentuk umpan balik konstruktif yang paling mendidik dari guru adalah...",
+                options: [
+                    "Coret merah seluruh karangan dan beri nilai 50 tanpa catatan.",
+                    "Puji usahanya, berikan catatan spesifik pada kata yang salah ketik, serta tunjukkan contoh perbaikannya.",
+                    "Membacakan karangan siswa yang salah di depan umum sebagai peringatan.",
+                    "Mengabaikan kesalahan ejaan asal isi karangannya menarik."
+                ],
+                correctAnswer: 1,
+                explanation: "Umpan balik konstruktif menggabungkan apresiasi, umpan balik spesifik pada area perbaikan, dan arahan konkret."
+            },
+
+            // --- LITERASI ---
+            {
+                id: "LIT-01",
+                category: "LITERASI",
+                difficulty: "HOTS",
+                competency: "Evaluasi Informasi Teks",
+                stimulus: "Pengumuman Madrasah:\n'Dalam rangka memperingati Hari Bumi, MI Al-Ikhlas mengadakan program Pembiasaan Bawa Tumbler dan Tempat Makan Sendiri mulai Senin depan. Sampah plastik bekas kemasan jajanan di kantin terbukti menyumbang 70% dari total sampah harian madrasah. Melalui program ini, diharapkan sampah plastik berkurang secara drastis.'",
+                question: "Berdasarkan pengumuman di atas, argumen paling kuat yang mendukung kebijakan madrasah tersebut adalah...",
+                options: [
+                    "Siswa tidak perlu lagi membeli makanan di kantin madrasah.",
+                    "Pengurangan sampah plastik dapat tercapai langsung dari sumbernya dengan mengganti kemasan sekali pakai.",
+                    "Harga tumbler dan tempat makan lebih murah daripada pembungkus plastik.",
+                    "Sampah organik di madrasah akan otomatis hilang dengan kebijakan tersebut."
+                ],
+                correctAnswer: 1,
+                explanation: "Informasi tersurat menyatakan 70% sampah berasal dari kemasan jajanan, sehingga pencegahan dari sumbernya (membawa tumbler/wadah) adalah argumen paling rasional."
+            },
+            {
+                id: "LIT-02",
+                category: "LITERASI",
+                difficulty: "MEDIUM",
+                competency: "Ide Pokok Teks",
+                stimulus: "Membaca merupakan jendela dunia yang memegang peranan penting dalam pembentukan karakter anak. Melalui bacaan cerita bernilai moral, siswa MI tidak hanya mengasah kecakapan berbahasa, tetapi juga melatih empati serta pemahaman sosial. Oleh karena itu, penguatan literasi sejak dini menjadi fondasi utama dalam kurikulum pendidikan madrasah.",
+                question: "Gagasan utama paragraf di atas adalah...",
+                options: [
+                    "Membaca cerita membuat anak cepat lelah.",
+                    "Pentingnya penguatan literasi sejak dini untuk pembentukan karakter dan kecakapan siswa.",
+                    "Kurikulum madrasah hanya berfokus pada pelajaran bahasa.",
+                    "Anak-anak MI wajib membeli buku cerita moral setiap bulan."
+                ],
+                correctAnswer: 1,
+                explanation: "Gagasan utama mencakup peran penting membaca bagi pembentukan karakter dan kecakapan sehingga literasi jadi fondasi utama."
+            },
+            {
+                id: "LIT-03",
+                category: "LITERASI",
+                difficulty: "BASIC",
+                competency: "Informasi Tersurat",
+                stimulus: "Perpustakaan MI Nurul Huda membuka layanan pinjam buku setiap hari Senin hingga Jumat pukul 08.00 - 14.00 WIB. Setiap siswa diperbolehkan meminjam maksimal 2 buku selama 7 hari.",
+                question: "Berapa lama batas maksimal siswa dapat meminjam buku perpustakaan?",
+                options: [
+                    "2 hari",
+                    "5 hari",
+                    "7 hari",
+                    "14 hari"
+                ],
+                correctAnswer: 2,
+                explanation: "Teks secara tersurat menyebutkan 'selama 7 hari'."
+            },
+            {
+                id: "LIT-04",
+                category: "LITERASI",
+                difficulty: "HOTS",
+                competency: "Membandingkan Informasi",
+                stimulus: "Teks A: 'Penggunaan gawai bagi siswa usia MI memberikan akses cepat ke sumber belajar interaktif dan video pembelajaran sains.'\nTeks B: 'Penggunaan gawai berlebihan pada anak MI berpotensi menurunkan konsentrasi belajar dan mengganggu kesehatan mata.'",
+                question: "Sintesis atau kesimpulan komparatif yang tepat dari kedua teks di atas adalah...",
+                options: [
+                    "Gawai harus dilarang sepenuhnya bagi seluruh siswa MI tanpa terkecuali.",
+                    "Gawai memberikan manfaat belajar jika digunakan secara terarah dan terbatasi agar tidak berdampak negatif.",
+                    "Siswa MI sebaiknya belajar menggunakan gawai seharian penuh.",
+                    "Teks A dan Teks B saling bertentangan dan tidak dapat dipercaya."
+                ],
+                correctAnswer: 1,
+                explanation: "Sintesis memadukan aspek positif (Teks A) dan potensi dampak negatif (Teks B) menjadi panduan penggunaan berimbang."
+            },
+            {
+                id: "LIT-05",
+                category: "LITERASI",
+                difficulty: "MEDIUM",
+                competency: "Fakta dan Opini",
+                stimulus: "Perhatikan kalimat berikut:\n(1) MI Miftahul Ulum didirikan pada tahun 1985.\n(2) Suasana belajar di madrasah ini sangat menyenangkan dan paling indah di kecamatan.\n(3) Jumlah siswa aktif saat ini sebanyak 320 anak.\n(4) Gedung madrasah terdiri dari dua lantai.",
+                question: "Kalimat yang merupakan opini ditunjukkan oleh nomor...",
+                options: [
+                    "(1)",
+                    "(2)",
+                    "(3)",
+                    "(4)"
+                ],
+                correctAnswer: 1,
+                explanation: "Kalimat (2) memuat kata subjektif ('sangat menyenangkan', 'paling indah') yang merupakan penafsiran/opini."
+            },
+            {
+                id: "LIT-06",
+                category: "LITERASI",
+                difficulty: "BASIC",
+                competency: "Membaca Infografik",
+                stimulus: "Infografik Jadwal Piket Kebersihan:\nSenin: Budi, Siti, Rani\nSelasa: Ahmad, Dewi, Farhan\nRabu: Budi, Doni, Aisyah\nKamis: Farhan, Siti, Hassan",
+                question: "Siapakah siswa yang bertugas piket sebanyak dua kali dalam seminggu?",
+                options: [
+                    "Ahmad dan Dewi",
+                    "Budi, Siti, dan Farhan",
+                    "Rani dan Doni",
+                    "Hassan dan Aisyah"
+                ],
+                correctAnswer: 1,
+                explanation: "Budi (Senin & Rabu), Siti (Senin & Kamis), Farhan (Selasa & Kamis) muncul dua kali dalam jadwal."
+            },
+            {
+                id: "LIT-07",
+                category: "LITERASI",
+                difficulty: "HOTS",
+                competency: "Menilai Argumen",
+                stimulus: "Seorang penulis dalam artikel majalah edukasi menyatakan: 'Semua madrasah yang tidak memiliki sarana laboratorium komputer dipastikan memiliki mutu lulusan yang rendah.'",
+                question: "Bagaimana penilaian Anda terhadap kualitas argumen artikel tersebut?",
+                options: [
+                    "Argumen sangat kuat karena komputer adalah satu-satunya tolok ukur mutu pendidikan modern.",
+                    "Argumen lemah dan mengandung generalisasi berlebihan karena mutu lulusan dipengaruhi banyak faktor lain seperti kualitas guru dan proses belajar.",
+                    "Argumen tepat karena siswa yang tidak belajar komputer tidak bisa membaca.",
+                    "Argumen tidak dapat dinilai karena tidak memuat angka statistik."
+                ],
+                correctAnswer: 1,
+                explanation: "Argumen tersebut meruapakan klaim over-generalization (over-general klaim) sebab kelengkapan laboratorium komputer bukan variabel tunggal penentu kualitas lulusan."
+            },
+            {
+                id: "LIT-08",
+                category: "LITERASI",
+                difficulty: "MEDIUM",
+                competency: "Informasi Tersirat",
+                stimulus: "Pak Kiai tersenyum lebar sambil menepuk bahu Farhan setelah pengumuman lomba Tahfizh Juz Amma tingkat kabupaten dibacakan.",
+                question: "Informasi tersirat dari kalimat di atas adalah...",
+                options: [
+                    "Farhan merasa kecewa dengan hasil lomba.",
+                    "Pak Kiai bangga dan puas atas prestasi Farhan dalam lomba.",
+                    "Pak Kiai marah karena Farhan tidak juara.",
+                    "Lomba Tahfizh belum dimulai."
+                ],
+                correctAnswer: 1,
+                explanation: "Gestur tersenyum lebar dan menepuk bahu mengekspresikan kebanggaan dan apresiasi positif atas keberhasilan."
+            },
+            {
+                id: "LIT-09",
+                category: "LITERASI",
+                difficulty: "BASIC",
+                competency: "Kosakata Kontekstual",
+                stimulus: "Guru mengimbau siswa untuk bersikap 'inklusif' saat memilih teman dalam kerja kelompok tanpa membeda-bedakan latar belakang.",
+                question: "Makna kata 'inklusif' dalam konteks tersebut adalah...",
+                options: [
+                    "Tertutup dan membatasi diri",
+                    "Menerima dan melibatkan semua orang secara terbuka",
+                    "Memilih teman yang kaya saja",
+                    "Mengelompokkan siswa berdasarkan nilai tes"
+                ],
+                correctAnswer: 1,
+                explanation: "Inklusif berarti memuat/melibatkan semua elemen tanpa diskriminasi."
+            },
+            {
+                id: "LIT-10",
+                category: "LITERASI",
+                difficulty: "MEDIUM",
+                competency: "Menyimpulkan Teks",
+                stimulus: "Setiap pagi sebelum KBM dimulai, siswa MI Pembina membaca Al-Qur'an selama 15 menit. Aktivitas ini berjalan konsisten selama 3 tahun. Hasilnya, tingkat ketenangan kelas meningkat dan kedisiplinan siswa berada pada kategori amat baik.",
+                question: "Kesimpulan paling tepat dari bacaan tersebut adalah...",
+                options: [
+                    "Kegiatan membaca Al-Qur'an 15 menit di pagi hari berdampak positif terhadap kedisiplinan dan suasana belajar.",
+                    "Membaca Al-Qur'an menyita waktu belajar mata pelajaran umum.",
+                    "Siswa MI hanya perlu belajar Al-Qur'an saja tanpa mata pelajaran lain.",
+                    "Kedisiplinan siswa tidak berhubungan dengan pembiasaan di madrasah."
+                ],
+                correctAnswer: 0,
+                explanation: "Kesimpulan merangkum hubungan sebab-akibat antara pembiasaan mengaji pagi dengan iklim kondusif serta kedisiplinan."
+            },
+            {
+                id: "LIT-11",
+                category: "LITERASI",
+                difficulty: "HOTS",
+                competency: "Evaluasi Kredibilitas Informasi",
+                stimulus: "Seorang guru menerima pesan berantai di grup obrolan: 'Awas! Beredar permen beracun di depan seluruh sekolah dasar. Sebarkan pesan ini ke 20 orang sekarang juga!'",
+                question: "Sikap literasi digital yang paling bijak dan bertanggung jawab dilakukan guru adalah...",
+                options: [
+                    "Langsung meneruskan pesan tersebut ke seluruh grup kelas orang tua murid agar waspada.",
+                    "Memeriksa kebenaran informasi melalui saluran resmi/pihak berwenang sebelum mengunggah atau membagikan pesan.",
+                    "Menghapus grup obrolan madrasah secara permanen.",
+                    "Memarahi pengirim pesan tanpa mengecek kontennya."
+                ],
+                correctAnswer: 1,
+                explanation: "Prinsip literasi digital mensyaratkan verifikasi dan konfirmasi fakta (saring sebelum sharing) untuk mencegah kepanikan hoax."
+            },
+            {
+                id: "LIT-12",
+                category: "LITERASI",
+                difficulty: "BASIC",
+                competency: "Tabel dan Teks",
+                stimulus: "Data Peminjam Buku Perpustakaan Minggu Ini:\nSenin: 15 buku\nSelasa: 22 buku\nRabu: 18 buku\nKamis: 30 buku\nJumat: 25 buku",
+                question: "Puncak hari pinjaman buku terbanyak terjadi pada hari...",
+                options: [
+                    "Senin",
+                    "Selasa",
+                    "Kamis",
+                    "Jumat"
+                ],
+                correctAnswer: 2,
+                explanation: "Hari Kamis mencatatkan peminjaman terbanyak yaitu 30 buku."
+            },
+
+            // --- NUMERASI ---
+            {
+                id: "NUM-01",
+                category: "NUMERASI",
+                difficulty: "HOTS",
+                competency: "Interpretasi Data & Rasio",
+                stimulus: "Data Hasil Asesmen Matematika Kelas V MI (Jumlah Siswa = 40 anak):\n- Nilai Sangat Baik (85-100): 10 siswa\n- Nilai Baik (70-84): 18 siswa\n- Nilai Cukup (55-69): 8 siswa\n- Nilai Perlu Bimbingan (<55): 4 siswa",
+                question: "Persentase siswa yang telah mencapai Kriteria Ketuntasan Minimal (minimal Nilai Baik / ≥70) adalah...",
+                options: [
+                    "25%",
+                    "45%",
+                    "70%",
+                    "85%"
+                ],
+                correctAnswer: 2,
+                explanation: "Siswa mencapai ≥70 = (10 + 18) = 28 siswa. Persentase = (28 / 40) x 100% = 70%."
+            },
+            {
+                id: "NUM-02",
+                category: "NUMERASI",
+                difficulty: "MEDIUM",
+                competency: "Rata-rata & Data Kelas",
+                stimulus: "Nilai ulangan Harian IPA dari 5 orang siswa MI berturut-turut adalah: 75, 80, 85, 90, dan 70.",
+                question: "Berapakah rata-rata (mean) nilai ulangan kelima siswa tersebut?",
+                options: [
+                    "78",
+                    "80",
+                    "82",
+                    "85"
+                ],
+                correctAnswer: 1,
+                explanation: "Total Nilai = 75 + 80 + 85 + 90 + 70 = 400. Rata-rata = 400 / 5 = 80."
+            },
+            {
+                id: "NUM-03",
+                category: "NUMERASI",
+                difficulty: "BASIC",
+                competency: "Operasi Pecahan Sederhana",
+                stimulus: "Ibu Nurul membeli 3/4 kg tepung terigu untuk membuat kue di kelas boga MI. Di lemari masih tersisa 1/2 kg tepung.",
+                question: "Total persediaan tepung terigu Ibu Nurul sekarang adalah...",
+                options: [
+                    "4/6 kg",
+                    "5/4 kg (1 1/4 kg)",
+                    "1 kg",
+                    "2 kg"
+                ],
+                correctAnswer: 1,
+                explanation: "3/4 + 1/2 = 3/4 + 2/4 = 5/4 kg = 1 1/4 kg."
+            },
+            {
+                id: "NUM-04",
+                category: "NUMERASI",
+                difficulty: "HOTS",
+                competency: "Penganggaran & Kontekstual",
+                stimulus: "Panitia Peringatan Hari Besar Islam (PHBI) MI memiliki anggaran Rp 1.200.000,00. Anggaran dialokasikan untuk:\n- Dekorasi & Panggung: 25%\n- Konsumsi Peserta: 50%\n- Hadiah Lomba: sisanya",
+                question: "Berapakah besarnya dana yang dialokasikan khusus untuk Hadiah Lomba?",
+                options: [
+                    "Rp 200.000,00",
+                    "Rp 300.000,00",
+                    "Rp 400.000,00",
+                    "Rp 600.000,00"
+                ],
+                correctAnswer: 1,
+                explanation: "Sisa persentase untuk Hadiah Lomba = 100% - (25% + 50%) = 25%. Dana = 25% x Rp 1.200.000 = Rp 300.000,00."
+            },
+            {
+                id: "NUM-05",
+                category: "NUMERASI",
+                difficulty: "MEDIUM",
+                competency: "Perbandingan / Rasio",
+                stimulus: "Rasio jumlah siswa laki-laki dan perempuan di kelas VI MI Al-Hikmah adalah 3 : 4. Jika jumlah seluruh siswa di kelas tersebut adalah 35 anak...",
+                question: "Berapa manakah jumlah siswa perempuan di kelas tersebut?",
+                options: [
+                    "15 anak",
+                    "20 anak",
+                    "21 anak",
+                    "25 anak"
+                ],
+                correctAnswer: 1,
+                explanation: "Jumlah bagian = 3 + 4 = 7 bagian. Jumlah perempuan = (4 / 7) x 35 = 20 anak."
+            },
+            {
+                id: "NUM-06",
+                category: "NUMERASI",
+                difficulty: "BASIC",
+                competency: "Pengukuran Waktu",
+                stimulus: "Ujian Simulasi AKGTK dimulai pukul 08.00 WIB. Durasi waktu yang disediakan adalah 90 menit.",
+                question: "Pada pukul berapakah ujian simulasi tersebut akan berakhir secara otomatis?",
+                options: [
+                    "09.00 WIB",
+                    "09.15 WIB",
+                    "09.30 WIB",
+                    "10.00 WIB"
+                ],
+                correctAnswer: 2,
+                explanation: "90 menit = 1 jam 30 menit. 08.00 + 1 jam 30 menit = 09.30 WIB."
+            },
+            {
+                id: "NUM-07",
+                category: "NUMERASI",
+                difficulty: "HOTS",
+                competency: "Penalaran Geometri & Luas",
+                stimulus: "Lapangan olahraga madrasah berbentuk persegi panjang dengan ukuran panjang 20 meter dan lebar 15 meter. Pihak madrasah hendak memasang ubin rumput sintetis di seluruh permukaan lapangan.",
+                question: "Jika biaya rumput sintetis beserta pemasangan adalah Rp 50.000,00 per meter persegi, total biaya yang dibutuhkan adalah...",
+                options: [
+                    "Rp 7.500.000,00",
+                    "Rp 12.000.000,00",
+                    "Rp 15.000.000,00",
+                    "Rp 30.000.000,00"
+                ],
+                correctAnswer: 2,
+                explanation: "Luas lapangan = 20 m x 15 m = 300 m². Biaya total = 300 x Rp 50.000 = Rp 15.000.000,00."
+            },
+            {
+                id: "NUM-08",
+                category: "NUMERASI",
+                difficulty: "MEDIUM",
+                competency: "Probabilitas Sederhana",
+                stimulus: "Dalam kotak kelereng media pembelajaran kelas III, terdapat 5 kelereng merah, 3 kelereng biru, dan 2 kelereng hijau.",
+                question: "Jika seorang siswa mengambil 1 kelereng secara acak, peluang terambilnya kelereng berwarna biru adalah...",
+                options: [
+                    "2/10",
+                    "3/10",
+                    "5/10",
+                    "3/5"
+                ],
+                correctAnswer: 1,
+                explanation: "Total kelereng = 5 + 3 + 2 = 10. Kelereng biru = 3. Peluang = 3/10."
+            },
+            {
+                id: "NUM-09",
+                category: "NUMERASI",
+                difficulty: "BASIC",
+                competency: "Estimasi Belanja Sederhana",
+                stimulus: "Seorang guru MI membeli 4 pack buku tulis seharga Rp 38.500,00 per pack.",
+                question: "Estimasi / perkiraan biaya paling mendekati yang harus dibayar guru tersebut adalah sekitar...",
+                options: [
+                    "Rp 120.000,00",
+                    "Rp 160.000,00",
+                    "Rp 200.000,00",
+                    "Rp 240.000,00"
+                ],
+                correctAnswer: 1,
+                explanation: "Pembulatan 38.500 ke 40.000. Perkalian estimasi: 4 x 40.000 = Rp 160.000,00."
+            },
+            {
+                id: "NUM-10",
+                category: "NUMERASI",
+                difficulty: "MEDIUM",
+                competency: "Volume Bangun Ruang",
+                stimulus: "Sebuah akuarium kelas berbentuk kubus memiliki panjang rusuk bagian dalam 40 cm.",
+                question: "Berapa liter kapasitas air maksimal jika akuarium tersebut diisi penuh? (1 liter = 1.000 cm³)",
+                options: [
+                    "16 Litur",
+                    "32 Liter",
+                    "64 Liter",
+                    "128 Liter"
+                ],
+                correctAnswer: 2,
+                explanation: "Volume kubus = 40 x 40 x 40 = 64.000 cm³. Dalam liter = 64.000 / 1.000 = 64 Liter."
+            },
+            {
+                id: "NUM-11",
+                category: "NUMERASI",
+                difficulty: "HOTS",
+                competency: "Interpretasi Diagram Batang",
+                stimulus: "Diagram penjualan buku di koperasi madrasah selama 4 bulan:\nJanuari: 120 eksemplar\nFebruari: 150 eksemplar\nMaret: 180 eksemplar\nApril: 210 eksemplar",
+                question: "Pernyataan analisis tren yang benar berdasarkan data penjualan tersebut adalah...",
+                options: [
+                    "Penjualan buku terus menurun rata-rata 30 eksemplar per bulan.",
+                    "Terjadi peningkatan penjualan konsisten sebesar 30 eksemplar setiap bulannya.",
+                    "Penjualan bulan April dua kali lipat dibanding bulan Januari.",
+                    "Total penjualan selama 4 bulan adalah 500 eksemplar."
+                ],
+                correctAnswer: 1,
+                explanation: "Peningkatan per bulan: 150-120=30; 180-150=30; 210-180=30 (peningkatan konsisten 30 eksemplar)."
+            },
+            {
+                id: "NUM-12",
+                category: "NUMERASI",
+                difficulty: "BASIC",
+                competency: "Skala dan Peta",
+                stimulus: "Pada peta lingkungan madrasah, jarak antara gedung MI dan masjid desa adalah 4 cm. Skala peta adalah 1 : 5.000.",
+                question: "Jarak sebenarnya antara kedua tempat tersebut adalah...",
+                options: [
+                    "200 meter",
+                    "20 meter",
+                    "2 kilometer",
+                    "20 kilometer"
+                ],
+                correctAnswer: 0,
+                explanation: "Jarak sebenarnya = 4 cm x 5.000 = 20.000 cm = 200 meter."
+            },
+
+            // --- SAINS ---
+            {
+                id: "SAI-01",
+                category: "SAINS",
+                difficulty: "HOTS",
+                competency: "Fenomena & Konsep Ekosistem",
+                stimulus: "Siswa kelas IV MI melakukan pengamatan di kebun madrasah dan menemukan populasi ulat meningkat pesat sehingga merusak daun tanaman sayur. Setelah dianalisis, ternyata populasi burung pemakan ulat berkurang drastis akibat pemburuan liar.",
+                question: "Berdasarkan prinsip keseimbangan rantai makanan, solusi lingkungan terbaik untuk mengatasi masalah tersebut secara berkelanjutan adalah...",
+                options: [
+                    "Menyemprotkan pestisida kimia konsentrasi tinggi setiap hari.",
+                    "Melarang pemburuan burung dan menyediakan tempat bersarang agar populasi predator alami kembali seimbang.",
+                    "Menebang seluruh tanaman sayur dan menggantinya dengan tanaman plastik.",
+                    "Membakar seluruh sampah di sekitar kebun madrasah."
+                ],
+                correctAnswer: 1,
+                explanation: "Memulihkan rantai makanan alami melalui perlindungan burung pemakan ulat merupakan pengendalian hama hayati (biological control) yang ramah lingkungan."
+            },
+            {
+                id: "SAI-02",
+                category: "SAINS",
+                difficulty: "MEDIUM",
+                competency: "Sistem Pencernaan Manusia",
+                stimulus: "Saat pembelajaran IPA kelas V MI tentang organ pencernaan, guru bertanya mengapa makanan harus dikunyah dengan baik di mulut sebelum ditelan.",
+                question: "Fungsi pencernaan mekanis dan kimiawi yang terjadi secara bersamaan di dalam rongga mulut adalah...",
+                options: [
+                    "Pemotongan makanan oleh gigi dan penyerapan sari makanan oleh pembuluh darah.",
+                    "Penghancuran makanan oleh gigi serta pemecahan karbohidrat oleh enzim ptialin dalam ludah.",
+                    "Pengasaman makanan oleh asam klorida dan penyerapan air.",
+                    "Pembusukan sisa makanan oleh bakteri E. coli."
+                ],
+                correctAnswer: 1,
+                explanation: "Mulut melayani pencernaan mekanis (gigi) dan kimiawi (enzim ptyalin/amilase saliva yang memecah amilum)."
+            },
+            {
+                id: "SAI-03",
+                category: "SAINS",
+                difficulty: "BASIC",
+                competency: "Perubahan Wujud Zat",
+                stimulus: "Siswa mengamati titik-titik air yang terbentuk di dinding luar gelas kaca yang berisi es batu.",
+                question: "Proses perubahan wujud zat yang terjadi pada fenomena tersebut dinamakan...",
+                options: [
+                    "Mencair",
+                    "Menguap",
+                    "Mengembun (Kondensasi)",
+                    "Membeku"
+                ],
+                correctAnswer: 2,
+                explanation: "Uap air di udara sekitar gelas mengembun (kondensasi) saat bersentuhan dengan permukaan gelas yang dingin."
+            },
+            {
+                id: "SAI-04",
+                category: "SAINS",
+                difficulty: "HOTS",
+                competency: "Gaya dan Energi",
+                stimulus: "Seorang siswa MI kesulitan mendorong lemari kayu berat di atas lantai semen yang kasar. Guru menyarankan untuk memasang roda kecil di bagian bawah lemari.",
+                question: "Alasan ilmiah mengapa pemasangan roda mempermudah lemari dipindahkan adalah...",
+                options: [
+                    "Roda mengurangi massa total lemari secara signifikan.",
+                    "Roda mengubah gaya gesek geser menjadi gaya gesek gelinding yang jauh lebih kecil nilainya.",
+                    "Roda menghilangkan gaya gravitasi bumi pada lemari.",
+                    "Roda menambah daya dorong dari tubuh siswa."
+                ],
+                correctAnswer: 1,
+                explanation: "Gaya gesek gelinding (rolling friction) memiliki nilai hambatan yang lebih kecil dibanding gaya gesek meluncur (sliding friction)."
+            },
+            {
+                id: "SAI-05",
+                category: "SAINS",
+                difficulty: "MEDIUM",
+                competency: "Sistem Pernapasan Manusia",
+                stimulus: "Di dalam organ paru-paru manusia terdapat gelembung-gelembung halus tempat terjadinya pertukaran gas.",
+                question: "Nama bagian paru-paru serta proses pertukaran gas yang dimaksud adalah...",
+                options: [
+                    "Bronkus; pertukaran nitrogen dan uap air.",
+                    "Alveolus; pertukaran oksigen (O₂) dan karbondioksida (CO₂).",
+                    "Trakea; penyerapan oksigen murni.",
+                    "Laring; penyaringan debu udara."
+                ],
+                correctAnswer: 1,
+                explanation: "Alveolus merupakan struktur khusus paru-paru tempat difusi O₂ dan CO₂."
+            },
+            {
+                id: "SAI-06",
+                category: "SAINS",
+                difficulty: "BASIC",
+                competency: "Bumi dan Antariksa",
+                stimulus: "",
+                question: "Peristiwa pergantian siang dan malam di bumi terjadi sebagai akibat langsung dari...",
+                options: [
+                    "Revolusi bumi mengelilingi matahari",
+                    "Rotasi bumi pada porosnya",
+                    "Revolusi bulan mengelilingi bumi",
+                    "Gerhana matahari total"
+                ],
+                correctAnswer: 1,
+                explanation: "Rotasi bumi pada porosnya (24 jam) menyebabkan bagian bumi bergantian menghadap dan membelakangi matahari."
+            },
+            {
+                id: "SAI-07",
+                category: "SAINS",
+                difficulty: "HOTS",
+                competency: "Perubahan Lingkungan & Adaptasi",
+                stimulus: "Sebuah area hutan di sekitar desa dikonversi menjadi lahan perumahan secara masif. Beberapa bulan kemudian, warga desa sering mengalami banjir luapan air hujan.",
+                question: "Hubungan sebab-akibat ilmiah antara penebangan hutan dan banjir tersebut adalah...",
+                options: [
+                    "Pohon hutan menarik awan hujan ke desa.",
+                    "Hilangnya vegetasi mengurangi daerah resapan air (infiltrasi) sehingga memperbesar limpasan permukaan (run-off).",
+                    "Tanpa pohon, air hujan berubah menjadi lebih berat.",
+                    "Akar pohon yang hilang menyebabkan air laut naik ke daratan."
+                ],
+                correctAnswer: 1,
+                explanation: "Akar tumbuhan dan serasah hutan memfasilitasi infiltrasi air ke dalam tanah. Hilangnya pohon menyebabkan air hujan langsung mengalir sebagai limpasan permukaan."
+            },
+            {
+                id: "SAI-08",
+                category: "SAINS",
+                difficulty: "MEDIUM",
+                competency: "Bentuk Energi & Transformasi",
+                stimulus: "Saat panel surya yang terpasang di atap laboratorium madrasah terkena sinar matahari, alat tersebut dapat menyalakan lampu pijar di dalam ruang.",
+                question: "Urutan perubahan energi yang tepat pada peristiwa di atas adalah...",
+                options: [
+                    "Energi Kimia → Energi Listrik → Energi Panas",
+                    "Energi Cahaya (Matahari) → Energi Listrik → Energi Cahaya & Panas",
+                    "Energi Gerak → Energi Cahaya → Energi Listrik",
+                    "Energi Panas → Energi Gerak → Energi Cahaya"
+                ],
+                correctAnswer: 1,
+                explanation: "Panel surya (fotovoltaik) merubah energi cahaya matahari menjadi energi listrik yang kemudian menyalakan lampu (cahaya & panas)."
+            },
+            {
+                id: "SAI-09",
+                category: "SAINS",
+                difficulty: "BASIC",
+                competency: "Ciri Makhluk Hidup",
+                stimulus: "Tumbuhan putri malu (Mimosa pudica) mengatupkan daunnya ketika disentuh oleh siswa saat praktik IPA.",
+                question: "Ciri-ciri makhluk hidup yang ditunjukkan oleh tumbuhan putri malu tersebut adalah...",
+                options: [
+                    "Bernapas",
+                    "Peka terhadap rangsangan (Iritabilitas)",
+                    "Berkembang biak",
+                    "Memerlukan makanan"
+                ],
+                correctAnswer: 1,
+                explanation: "Respon mengatup akibat sentuhan merupakan wujud iritabilitas (kepekaan menerima dan menanggapi rangsang)."
+            },
+            {
+                id: "SAI-10",
+                category: "SAINS",
+                difficulty: "MEDIUM",
+                competency: "Rangka Manusia",
+                stimulus: "Sendi yang memungkinkan gerakan ke segala arah, seperti hubungan antara tulang lengan atas dan tulang belikat, disebut sendi...",
+                question: "",
+                options: [
+                    "Sendi Engsel",
+                    "Sendi Peluru",
+                    "Sendi Putar",
+                    "Sendi Pelana"
+                ],
+                correctAnswer: 1,
+                explanation: "Sendi peluru (ball and socket joint) memungkinkan pergerakan paling bebas ke segala arah."
+            },
+            {
+                id: "SAI-11",
+                category: "SAINS",
+                difficulty: "HOTS",
+                competency: "Sifat-sifat Cahaya",
+                stimulus: "Seorang siswa memasukkan pensil lurus ke dalam gelas bening berisi air bening. Dari samping gelas, pensil tampak patah atau bengkok.",
+                question: "Penjelasan fisika yang tepat di balik fenomena optik tersebut adalah...",
+                options: [
+                    "Cahaya dapat dipantulkan sempurna oleh air.",
+                    "Terjadi pembiasan (refraksi) cahaya saat merambat melalui dua medium dengan kerapatan optik berbeda (udara dan air).",
+                    "Air merusak struktur fisik pensil secara sementara.",
+                    "Gelas bening menyerap seluruh spektrum cahaya."
+                ],
+                correctAnswer: 1,
+                explanation: "Refraksi (pembiasan) terjadi ketika cahaya melewati batas dua medium bening berbeda kerapatan (udara ke air), membengkokkan arah rambat cahaya."
+            },
+            {
+                id: "SAI-12",
+                category: "SAINS",
+                difficulty: "BASIC",
+                competency: "Siklus Air",
+                stimulus: "",
+                question: "Tahapan dalam siklus air di mana uap air di atmosfer berubah menjadi awan disebut proses...",
+                options: [
+                    "Evaporasi",
+                    "Transpirasi",
+                    "Kondensasi",
+                    "Presipitasi"
+                ],
+                correctAnswer: 2,
+                explanation: "Kondensasi adalah pengembunan uap air menjadi titik-titik air pengisi awan."
+            },
+
+            // --- PROFESIONAL GURU KELAS ---
+            {
+                id: "PRO-01",
+                category: "PROFESIONAL",
+                difficulty: "HOTS",
+                competency: "Pembelajaran Pembelajaran Terpadu / Kontekstual",
+                stimulus: "Ibu Fatimah hendak merancang modul pembelajaran terpadu tema 'Lingkungan Bersih' yang mengintegrasikan IPA (Siklus Air), Bahasa Indonesia (Teks Petunjuk), dan SBdP (Gambar Dekoratif) untuk kelas IV MI.",
+                question: "Alur kegiatan pembelajaran kontekstual yang paling efisien dan terpadu adalah...",
+                options: [
+                    "Mengajar IPA selama 2 jam, lalu istirahat, dilanjutkan Bahasa Indonesia 2 jam tanpa keterkaitan topik.",
+                    "Siswa membaca teks petunjuk penjernihan air sederhana, melakukan praktik filtrasi air keruh (IPA), lalu menggambar diagram poster ajakan menghemat air (SBdP).",
+                    "Memberikan tes tertulis ketiga mata pelajaran secara berturut-turut pada hari yang sama.",
+                    "Menugaskan siswa mencari gambar siklus air di internet dan menempelkannya di buku catatan."
+                ],
+                correctAnswer: 1,
+                explanation: "Integrasi kontekstual mengikat kompetensi dari berbagai mata pelajaran dalam satu alur aktivitas bermakna (membaca petunjuk -> praktik filtrasi -> poster ajakan)."
+            },
+            {
+                id: "PRO-02",
+                category: "PROFESIONAL",
+                difficulty: "MEDIUM",
+                competency: "Analisis Kesulitan Belajar",
+                stimulus: "Pak Hasan mengamati bahwa beberapa siswa kelas II MI konsisten terbalik saat menuliskan huruf 'b' dan 'd' serta angka '6' dan '9'.",
+                question: "Langkah profesional pertama yang harus dilakukan Pak Hasan adalah...",
+                options: [
+                    "Menganggap siswa tersebut malas dan memberikan hukuman menulis 100 kali.",
+                    "Melakukan identifikasi diskriminasi persepsi visual siswa menggunakan media kartu huruf/angka rabaan berbahan tekstur.",
+                    "Langsung merujuk siswa ke sekolah luar biasa tanpa asesmen mandiri.",
+                    "Mengabaikan masalah tersebut karena nanti akan sembuh sendiri."
+                ],
+                correctAnswer: 1,
+                explanation: "Gejala reversal (terbalik huruf/angka) pada awal kelas MI perlu diidentifikasi melalui pendekatan persepsi kinestetik/sensori sebelum menentukan tindak lanjut."
+            },
+            {
+                id: "PRO-03",
+                category: "PROFESIONAL",
+                difficulty: "BASIC",
+                competency: "Pengembangan Bahan Ajar",
+                stimulus: "",
+                question: "Prinsip utama dalam memilih bahan ajar dan media pembelajaran bagi siswa kelas rendah MI (Kelas I-III) adalah...",
+                options: [
+                    "Menggunakan teks bacaan ilmiah tanpa gambar.",
+                    "Mengutamakan benda konkret, visual menarik, komunikatif, dan aman digunakan.",
+                    "Memilih bahan ajar berbahasa asing agar terlihat canggih.",
+                    "Menggunakan aplikasi perangkat lunak yang rumit."
+                ],
+                correctAnswer: 1,
+                explanation: "Siswa kelas rendah MI memerlukan media konkret, interaktif, dan aman sesuai tahap perkembangan kognitifnya."
+            },
+            {
+                id: "PRO-04",
+                category: "PROFESIONAL",
+                difficulty: "HOTS",
+                competency: "Integrasi Literasi & Numerasi",
+                stimulus: "Guru kelas V MI merancang proyek pembelajaran 'Pasar Tradisional Madrasah'. Siswa bertindak sebagai penjual dan pembeli jajanan sehat menggunakan uang mainan.",
+                question: "Bagaimana kegiatan proyek ini mengintegrasikan literasi dan numerasi sekaligus?",
+                options: [
+                    "Siswa hanya dihitung nilai kebersihannya saja.",
+                    "Siswa menulis deskripsi produk & berkomunikasi santun (literasi) serta menghitung transaksi kembalian & rasio untung (numerasi).",
+                    "Siswa diminta membaca buku matematika selama pasar berlangsung.",
+                    "Kegiatan tersebut hanya melatih numerasi saja tanpa aspek literasi."
+                ],
+                correctAnswer: 1,
+                explanation: "Proyek pasar madrasah memadukan literasi komunikasi & komunikasi persuasif produk dengan numerasi operasi hitung uang nyata."
+            },
+            {
+                id: "PRO-05",
+                category: "PROFESIONAL",
+                difficulty: "MEDIUM",
+                competency: "Pemanfaatan Lingkungan Madrasah",
+                stimulus: "Di halaman MI terdapat kolam ikan dan taman toga yang cukup luas. Guru kelas III ingin memanfaatkannya sebagai sumber belajar.",
+                question: "Pemanfaatan lingkungan madrasah secara efisien sesuai kurikulum adalah...",
+                options: [
+                    "Menjadikan taman sekadar tempat bermain siswa saat jam istirahat.",
+                    "Mengajak siswa melakukan observasi terstruktur mengenai keanekaragaman hayati dan interaksi makhluk hidup.",
+                    "Menyuruh siswa membersihkan taman setiap jam pelajaran.",
+                    "Memindahkan seluruh tanaman ke dalam ruang kelas."
+                ],
+                correctAnswer: 1,
+                explanation: "Lingkungan sekolah dijadikan 'laboratorium hidup' melalui lembar pengamatan terstruktur (outdoor learning)."
+            },
+            {
+                id: "PRO-06",
+                category: "PROFESIONAL",
+                difficulty: "BASIC",
+                competency: "Penerapan Kurikulum Madrasah",
+                stimulus: "",
+                question: "Pilar utama karakteristik kurikulum yang berlaku pada Madrasah Ibtidaiyah adalah...",
+                options: [
+                    "Menghilangkan pelajaran ilmu pengetahuan umum.",
+                    "Penguatan pendidikan karakter berlandaskan nilai-nilai keislaman, literasi, numerasi, dan kecakapan abad 21.",
+                    "Hanya berfokus pada hafalan teori.",
+                    "Mengikuti kurikulum luar negeri sepenuhnya."
+                ],
+                correctAnswer: 1,
+                explanation: "Kurikulum MI memadukan standar nasional pendidikan dengan nilai-nilai khas keagamaan dan kecakapan abad 21."
+            },
+            {
+                id: "PRO-07",
+                category: "PROFESIONAL",
+                difficulty: "HOTS",
+                competency: "Pengambilan Keputusan Kurikuler",
+                stimulus: "Hasil evaluasi menunjukkan sebagian besar siswa kelas VI MI kesulitan memahami soal cerita Matematika bukan karena lupa rumus, melainkan karena tidak memahami alur kalimat bacaan.",
+                question: "Solusi kurikuler dan kolaboratif terbaik yang perlu diambil guru kelas VI adalah...",
+                options: [
+                    "Menambah jam latihan rumus matematika saja.",
+                    "Merancang pembelajaran lintas disiplin yang memadukan teknik pembedahan struktur cerita (Bahasa Indonesia) dengan pemodelan matematika.",
+                    "Menyarankan siswa mengambil les privat di luar madrasah.",
+                    "Mengganti semua soal cerita menjadi soal angka polos."
+                ],
+                correctAnswer: 1,
+                explanation: "Akar masalah ada pada pemahaman bacaan (literasi membaca), sehingga solusi terbaik adalah remediasi membaca pemahaman konteks matematika."
+            },
+            {
+                id: "PRO-08",
+                category: "PROFESIONAL",
+                difficulty: "MEDIUM",
+                competency: "Pembelajaran Mendalam (Deep Learning)",
+                stimulus: "Guru mengajar materi Sejarah Kebudayaan Islam tentang peristiwa Hijrah.",
+                question: "Pendekatan pembelajaran mendalam (deep learning) yang tepat adalah...",
+                options: [
+                    "Siswa diminta menghafal nama-nama kota dan tanggal hijrah saja.",
+                    "Siswa menganalisis alasan, tantangan, serta mengambil hikmah nilai keteladanan Hijrah untuk diterapkan dalam kehidupan sehari-hari.",
+                    "Guru berceramah selama 2 jam penuh tanpa tanya jawab.",
+                    "Siswa menyalin ulang isi buku paket ke buku tulis."
+                ],
+                correctAnswer: 1,
+                explanation: "Deep learning mengarahkan siswa memahami makna, melakukan analisis sebab-akibat, serta menginternalisasi nilai/hikmah."
+            },
+
+            // --- MODERASI BERAGAMA ---
+            {
+                id: "MOD-01",
+                category: "MODERASI_BERAGAMA",
+                difficulty: "HOTS",
+                competency: "Toleransi & Kehidupan Bermadrasah",
+                stimulus: "Di sebuah MI inklusif, terdapat siswa transfer dari latar belakang organisasi keagamaan yang berbeda dengan mayoritas warga madrasah. Saat peragaan ibadah, terdapat perbedaan bacaan atau gerakan sunnah yang memicu perdebatan di antara siswa.",
+                question: "Sikap fasilitasi terbaik dari guru kelas dalam merespons situasi tersebut adalah...",
+                options: [
+                    "Memaksa siswa baru tersebut mengikuti seluruh kebiasaan mayoritas tanpa memberikan penjelasan.",
+                    "Menjelaskan secara bijak bahwa perbedaan khilafiyah furu'iyah dalam ibadah adalah hal yang wajar dan indah, serta mengajarkan saling menghormati.",
+                    "Melarang siswa melakukan ibadah di madrasah.",
+                    "Memisahkan kelas siswa tersebut dari teman-temannya."
+                ],
+                correctAnswer: 1,
+                explanation: "Guru menghadirkan sikap moderat (tasamuh) dengan memberikan pemahaman keberagaman fiqih (furu'iyah) dan pentingnya toleransi."
+            },
+            {
+                id: "MOD-02",
+                category: "MODERASI_BERAGAMA",
+                difficulty: "MEDIUM",
+                competency: "Komitmen Kebangsaan",
+                stimulus: "Saat peringatan Hari Kemerdekaan RI di madrasah, guru mengajak siswa menyanyikan lagu nasional dan melakukan penghormatan bendera Merah Putih.",
+                question: "Nilai moderasi beragama yang ditanamkan dalam kegiatan tersebut adalah...",
+                options: [
+                    "Eksklusivisme kelompok",
+                    "Komitmen Kebangsaan (Cinta Tanah Air bagian dari Iman)",
+                    "Akomodatif terhadap budaya asing saja",
+                    "Sikap anti-tradisi lokal"
+                ],
+                correctAnswer: 1,
+                explanation: "Cinta tanah air dan penghormatan simbol negara merupakan indikator utama Komitmen Kebangsaan dalam Moderasi Beragama."
+            },
+            {
+                id: "MOD-03",
+                category: "MODERASI_BERAGAMA",
+                difficulty: "BASIC",
+                competency: "Anti-Kekerasan",
+                stimulus: "",
+                question: "Wujud nyata prinsip Anti-Kekerasan (non-violence) dalam lingkungan pembelajaran kelas MI adalah...",
+                options: [
+                    "Menyelesaikan perselisihan antarsiswa melalui musyawarah, permohonan maaf, dan edukasi empati.",
+                    "Memberikan hukuman fisik kepada siswa yang tidak mengerjakan tugas.",
+                    "Mendiamkan siswa yang melakukan perundungan (bullying) secara verbal.",
+                    "Menyuruh siswa yang bertengkar untuk berkelahi di luar madrasah."
+                ],
+                correctAnswer: 0,
+                explanation: "Prinsip anti-kekerasan menolak segala bentuk perundungan fisik/verbal serta mengutamakan dialog damai."
+            },
+            {
+                id: "MOD-04",
+                category: "MODERASI_BERAGAMA",
+                difficulty: "HOTS",
+                competency: "Penyelesaian Konflik Secara Damai",
+                stimulus: "Dua orang siswa MI berselisih paham mengenai pembagian porsi peran dalam tugas kelompok hingga saling mengejek suku asal masing-masing.",
+                question: "Langkah mediasi yang tepat dan berperspektif moderasi dari guru adalah...",
+                options: [
+                    "Mengeluarkan kedua siswa dari sekolah.",
+                    "Menaungi keduanya, memberikan pemahaman bahwa setiap suku bangsa diciptakan bermartabat, lalu membimbing mereka saling memaafkan dan membagi tugas secara adil.",
+                    "Bela salah satu siswa yang sukunya sama dengan guru.",
+                    "Membiarkan perselisihan tersebut berlarut-larut."
+                ],
+                correctAnswer: 1,
+                explanation: "Mediasi edukatif menegaskan kesetaraan martabat manusia tanpa memandang perbedaan etnis/suku."
+            },
+            {
+                id: "MOD-05",
+                category: "MODERASI_BERAGAMA",
+                difficulty: "MEDIUM",
+                competency: "Akomodatif terhadap Kebudayaan Lokal",
+                stimulus: "Masyarakat di sekitar madrasah memiliki tradisi syukuran bumi/manganan hasil panen. Pihak madrasah diundang untuk hadir.",
+                question: "Sikap madrasah yang akomodatif secara bijak terhadap tradisi lokal yang tidak bertentangan dengan syariat adalah...",
+                options: [
+                    "Menolak dan mengutuk tradisi masyarakat secara terbuka.",
+                    "Hadir bersilaturahmi, mendoakan kebaikan, serta mengarahkan ungkapan syukur kepada Allah SWT atas hasil panen.",
+                    "Mengabaikan undangan tanpa alasan.",
+                    "Melarang warga desa mengadakan tradisi tersebut."
+                ],
+                correctAnswer: 1,
+                explanation: "Akomodatif terhadap budaya lokal berarti menghargai tradisi kemasyarakatan sepanjang diisi dengan nilai kearifan dan tauhid."
+            },
+            {
+                id: "MOD-06",
+                category: "MODERASI_BERAGAMA",
+                difficulty: "BASIC",
+                competency: "Keseimbangan (Tawazun)",
+                stimulus: "",
+                question: "Sikap Tawazun (seimbang) seorang guru MI dalam kehidupan sehari-hari dicerminkan oleh...",
+                options: [
+                    "Mengarahkan siswa hanya belajar ibadah tanpa peduli sains modern.",
+                    "Menyeimbangkan pemenuhan tugas keagamaan, kecakapan intelektual umum, serta kepedulian sosial kemasyarakatan.",
+                    "Mengejar nilai akademis matematika dengan meninggalkan ibadah shalat.",
+                    "Memilih salah satu pihak teman saja dalam setiap diskusi."
+                ],
+                correctAnswer: 1,
+                explanation: "Tawazun menekankan keseimbangan antara spiritualitas, intelektualitas, dan kepekaan sosial."
+            }
+        ];
+
+        /*
+         * APP STATE MANAGEMENT
+         */
+        const appState = {
+            currentUser: localStorage.getItem('akgtk_username') || '',
+            history: JSON.parse(localStorage.getItem('akgtk_history') || '[]'),
+            currentView: 'login',
+
+            init() {
+                // Initialize Lucide Icons
+                lucide.createIcons();
+
+                // Check stored username
+                if (this.currentUser) {
+                    document.getElementById('login-name').value = this.currentUser;
+                    document.getElementById('header-username').innerText = this.currentUser;
+                    document.getElementById('header-avatar').innerText = this.currentUser.charAt(0).toUpperCase();
+                    document.getElementById('dash-user-name').innerText = this.currentUser;
+                }
+
+                // If already logged in before, show dashboard directly or keep on login screen as per guidelines
+                this.updateUIViews();
+                this.updateHistoryStats();
+            },
+
+            handleLogin(e) {
+                e.preventDefault();
+                const nameInput = document.getElementById('login-name').value.trim();
+                const passInput = document.getElementById('login-password').value;
+                const errorBox = document.getElementById('login-error');
+                const errorText = document.getElementById('login-error-text');
+
+                if (!nameInput) {
+                    errorText.innerText = "Silakan masukkan nama terlebih dahulu.";
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (passInput !== "123456") {
+                    errorText.innerText = "Password belum tepat. Silakan gunakan password uji coba yang tersedia.";
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+
+                errorBox.classList.add('hidden');
+                this.currentUser = nameInput;
+                localStorage.setItem('akgtk_username', nameInput);
+
+                // Update UI elements with user name
+                document.getElementById('header-username').innerText = nameInput;
+                document.getElementById('header-avatar').innerText = nameInput.charAt(0).toUpperCase();
+                document.getElementById('dash-user-name').innerText = nameInput;
+
+                this.navigateTo('dashboard');
+            },
+
+            navigateTo(viewId) {
+                this.currentView = viewId;
+                this.updateUIViews();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            updateUIViews() {
+                // List of views
+                const views = ['view-login', 'view-dashboard', 'view-mode-practice', 'view-cbt-prep', 'view-cbt-exam', 'view-cbt-result', 'view-history', 'view-guide'];
+                
+                views.forEach(v => {
+                    const el = document.getElementById(v);
+                    if (el) el.classList.add('hidden');
+                });
+
+                const target = document.getElementById(`view-${this.currentView}`);
+                if (target) target.classList.remove('hidden');
+
+                // Header & Footer visibility
+                const header = document.getElementById('main-header');
+                const footer = document.getElementById('main-footer');
+
+                if (this.currentView === 'login' || this.currentView === 'cbt-exam') {
+                    header.classList.add('hidden');
+                    footer.classList.add('hidden');
+                } else {
+                    header.classList.remove('hidden');
+                    footer.classList.remove('hidden');
+                }
+
+                // Re-render lucide icons
+                lucide.createIcons();
+            },
+
+            showChangeNameModal() {
+                document.getElementById('change-name-input').value = this.currentUser;
+                document.getElementById('modal-change-name').classList.remove('hidden');
+            },
+
+            closeChangeNameModal() {
+                document.getElementById('modal-change-name').classList.add('hidden');
+            },
+
+            saveNewName() {
+                const newName = document.getElementById('change-name-input').value.trim();
+                if (newName) {
+                    this.currentUser = newName;
+                    localStorage.setItem('akgtk_username', newName);
+                    document.getElementById('header-username').innerText = newName;
+                    document.getElementById('header-avatar').innerText = newName.charAt(0).toUpperCase();
+                    document.getElementById('dash-user-name').innerText = newName;
+                    this.closeChangeNameModal();
+                }
+            },
+
+            startFullSimulationPrep() {
+                cbtEngine.mode = 'FULL_SIMULATION';
+                document.getElementById('prep-title').innerText = "SIMULASI PENUH AKGTK 2026";
+                document.getElementById('prep-username').innerText = this.currentUser;
+                document.getElementById('prep-questions-count').innerText = "60 Soal (Lengkap 6 Kompetensi)";
+                document.getElementById('prep-duration').innerText = "90 Menit";
+                document.getElementById('prep-mode-label').innerText = "Simulasi Penuh CBT";
+                document.getElementById('prep-difficulty').innerText = "Campuran (Dasar 35%, Menengah 40%, HOTS 25%)";
+
+                this.navigateTo('cbt-prep');
+            },
+
+            startDiagnosticPrep() {
+                cbtEngine.mode = 'DIAGNOSTIC';
+                document.getElementById('prep-title').innerText = "DIAGNOSTIC TEST AKGTK";
+                document.getElementById('prep-username').innerText = this.currentUser;
+                document.getElementById('prep-questions-count').innerText = "20 Soal Pemetaan Awal";
+                document.getElementById('prep-duration').innerText = "30 Menit";
+                document.getElementById('prep-mode-label').innerText = "Diagnostic Test (Uji Pemetaan Kemampuan)";
+                document.getElementById('prep-difficulty').innerText = "Campuran Adaptif";
+
+                this.navigateTo('cbt-prep');
+            },
+
+            launchExam() {
+                cbtEngine.startExam();
+                this.navigateTo('cbt-exam');
+            },
+
+            saveExamToHistory(record) {
+                this.history.unshift(record);
+                localStorage.setItem('akgtk_history', JSON.stringify(this.history));
+                this.updateHistoryStats();
+            },
+
+            updateHistoryStats() {
+                const total = this.history.length;
+                document.getElementById('dash-history-count').innerText = `${total} Riwayat`;
+                document.getElementById('hist-stat-total').innerText = total;
+
+                if (total === 0) {
+                    document.getElementById('hist-stat-avg').innerText = "0";
+                    document.getElementById('hist-stat-highest').innerText = "0";
+                    document.getElementById('hist-stat-questions').innerText = "0";
+                    document.getElementById('history-list-container').innerHTML = `<p class="text-xs text-slate-500 italic text-center py-6">Belum ada riwayat simulasi yang dikerjakan.</p>`;
+                    return;
+                }
+
+                let sumScore = 0;
+                let maxScore = 0;
+                let totalQuestions = 0;
+
+                let historyHtml = '';
+                this.history.forEach((h, idx) => {
+                    sumScore += h.score;
+                    if (h.score > maxScore) maxScore = h.score;
+                    totalQuestions += h.totalQuestions;
+
+                    historyHtml += `
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+                            <div>
+                                <span class="font-bold text-slate-900 block">${h.modeName}</span>
+                                <span class="text-slate-500 text-[11px]">${h.date} • ${h.durationSpent} • ${h.totalQuestions} Soal</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-extrabold px-3 py-1 bg-slate-900 text-brand-400 rounded-xl">
+                                    Skor: ${h.score}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('hist-stat-avg').innerText = Math.round(sumScore / total);
+                document.getElementById('hist-stat-highest').innerText = maxScore;
+                document.getElementById('hist-stat-questions').innerText = totalQuestions;
+                document.getElementById('history-list-container').innerHTML = historyHtml;
+            }
+        };
+
+        /*
+         * PRACTICE FORM MANAGER
+         */
+        const practiceForm = {
+            category: 'ALL',
+            difficulty: 'MIX',
+            count: 10,
+
+            setCategory(cat) {
+                this.category = cat;
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    if (btn.dataset.cat === cat) {
+                        btn.className = "category-btn active p-3 rounded-xl border text-xs font-bold text-left transition border-brand-500 bg-brand-50 text-brand-700";
+                    } else {
+                        btn.className = "category-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-left transition text-slate-700 hover:bg-slate-50";
+                    }
+                });
+            },
+
+            setDifficulty(diff) {
+                this.difficulty = diff;
+                document.querySelectorAll('.diff-btn').forEach(btn => {
+                    if (btn.dataset.diff === diff) {
+                        btn.className = "diff-btn active p-3 rounded-xl border text-xs font-bold text-center transition border-brand-500 bg-brand-50 text-brand-700";
+                    } else {
+                        btn.className = "diff-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50";
+                    }
+                });
+            },
+
+            setCount(cnt) {
+                this.count = cnt;
+                document.querySelectorAll('.count-btn').forEach(btn => {
+                    if (parseInt(btn.dataset.count) === cnt) {
+                        btn.className = "count-btn active p-3 rounded-xl border text-xs font-bold text-center transition border-brand-500 bg-brand-50 text-brand-700";
+                    } else {
+                        btn.className = "count-btn p-3 rounded-xl border border-slate-200 text-xs font-bold text-center transition text-slate-700 hover:bg-slate-50";
+                    }
+                });
+            },
+
+            start() {
+                cbtEngine.mode = 'PRACTICE';
+                cbtEngine.practiceConfig = {
+                    category: this.category,
+                    difficulty: this.difficulty,
+                    count: this.count,
+                    instantExplanation: document.getElementById('practice-instant-explanation').checked
+                };
+
+                document.getElementById('prep-title').innerText = "LATIHAN PER MATERI";
+                document.getElementById('prep-username').innerText = appState.currentUser;
+                document.getElementById('prep-questions-count').innerText = `${this.count} Soal`;
+                document.getElementById('prep-duration').innerText = `${Math.ceil(this.count * 1.5)} Menit`;
+                document.getElementById('prep-mode-label').innerText = `Latihan (${this.category})`;
+                document.getElementById('prep-difficulty').innerText = this.difficulty;
+
+                appState.navigateTo('cbt-prep');
+            }
+        };
+
+        /*
+         * CBT EXAM ENGINE
+         */
+        const cbtEngine = {
+            mode: 'FULL_SIMULATION', // FULL_SIMULATION, PRACTICE, DIAGNOSTIC
+            practiceConfig: {},
+            questions: [],
+            userAnswers: {}, // { qIndex: selectedOptionIndex }
+            flagged: {},     // { qIndex: boolean }
+            currentIndex: 0,
+            timerInterval: null,
+            timeRemainingSeconds: 0,
+            totalExamSeconds: 0,
+
+            startExam() {
+                this.currentIndex = 0;
+                this.userAnswers = {};
+                this.flagged = {};
+
+                // Generate Question Set
+                this.questions = this.generateQuestionsSet();
+
+                // Set Timer
+                if (this.mode === 'FULL_SIMULATION') {
+                    this.totalExamSeconds = CONFIG.SIMULATION_DURATION_MINUTES * 60; // 90 mins
+                } else if (this.mode === 'DIAGNOSTIC') {
+                    this.totalExamSeconds = 30 * 60; // 30 mins
+                } else {
+                    this.totalExamSeconds = Math.ceil(this.practiceConfig.count * 1.5) * 60;
+                }
+                this.timeRemainingSeconds = this.totalExamSeconds;
+
+                // UI setup for Exam
+                document.getElementById('cbt-header-title').innerText = 
+                    this.mode === 'FULL_SIMULATION' ? "SIMULASI PENUH AKGTK 2026" :
+                    this.mode === 'DIAGNOSTIC' ? "DIAGNOSTIC TEST AKGTK" : "LATIHAN PER MATERI";
+
+                this.startTimer();
+                this.renderQuestionGrid();
+                this.loadQuestion(0);
+            },
+
+            generateQuestionsSet() {
+                let list = [];
+
+                if (this.mode === 'FULL_SIMULATION') {
+                    // Pull precise ratio per competency
+                    const comps = CONFIG.COMPOSITION;
+                    for (const [catKey, countNeeded] of Object.entries(comps)) {
+                        const pool = QUESTION_BANK.filter(q => q.category === catKey);
+                        const shuffled = this.shuffleArray([...pool]);
+                        list.push(...shuffled.slice(0, countNeeded));
+                    }
+
+                    // Fill up to 60 if bank pool is scaled
+                    if (list.length < 60) {
+                        const remainingPool = QUESTION_BANK.filter(q => !list.includes(q));
+                        list.push(...this.shuffleArray(remainingPool).slice(0, 60 - list.length));
+                    }
+                } else if (this.mode === 'DIAGNOSTIC') {
+                    // Pick 20 questions across categories
+                    list = this.shuffleArray([...QUESTION_BANK]).slice(0, CONFIG.DIAGNOSTIC_QUESTIONS);
+                } else if (this.mode === 'PRACTICE') {
+                    let pool = [...QUESTION_BANK];
+                    if (this.practiceConfig.category !== 'ALL') {
+                        pool = pool.filter(q => q.category === this.practiceConfig.category);
+                    }
+                    if (this.practiceConfig.difficulty !== 'MIX') {
+                        pool = pool.filter(q => q.difficulty === this.practiceConfig.difficulty);
+                    }
+                    list = this.shuffleArray(pool).slice(0, this.practiceConfig.count);
+
+                    // Fallback if pool is smaller than requested count
+                    if (list.length < this.practiceConfig.count) {
+                        const extraPool = QUESTION_BANK.filter(q => !list.includes(q));
+                        list.push(...this.shuffleArray(extraPool).slice(0, this.practiceConfig.count - list.length));
+                    }
+                }
+
+                // Shuffle final list & shuffle individual option letters while keeping correct answer accurate
+                const preparedQuestions = this.shuffleArray(list).map(q => {
+                    const originalOptions = q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.correctAnswer }));
+                    const shuffledOptions = this.shuffleArray(originalOptions);
+                    const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
+
+                    return {
+                        ...q,
+                        options: shuffledOptions.map(o => o.text),
+                        correctAnswer: newCorrectIndex
+                    };
+                });
+
+                return preparedQuestions;
+            },
+
+            shuffleArray(arr) {
+                const array = [...arr];
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            },
+
+            startTimer() {
+                if (this.timerInterval) clearInterval(this.timerInterval);
+
+                this.timerInterval = setInterval(() => {
+                    this.timeRemainingSeconds--;
+                    this.updateTimerDisplay();
+
+                    if (this.timeRemainingSeconds <= 0) {
+                        clearInterval(this.timerInterval);
+                        this.autoSubmitTimeOut();
+                    }
+                }, 1000);
+
+                this.updateTimerDisplay();
+            },
+
+            updateTimerDisplay() {
+                const mins = Math.floor(this.timeRemainingSeconds / 60);
+                const secs = this.timeRemainingSeconds % 60;
+                const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                document.getElementById('cbt-timer-text').innerText = formatted;
+
+                const container = document.getElementById('cbt-timer-container');
+                if (this.timeRemainingSeconds <= 300) { // 5 mins left
+                    container.className = "bg-red-900/80 border border-red-600 px-3.5 py-1.5 rounded-xl flex items-center gap-2 text-white font-mono font-bold text-base sm:text-lg animate-pulse";
+                } else if (this.timeRemainingSeconds <= 600) { // 10 mins left
+                    container.className = "bg-amber-900/80 border border-amber-600 px-3.5 py-1.5 rounded-xl flex items-center gap-2 text-amber-200 font-mono font-bold text-base sm:text-lg";
+                } else {
+                    container.className = "bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl flex items-center gap-2 text-brand-400 font-mono font-bold text-base sm:text-lg";
+                }
+            },
+
+            loadQuestion(index) {
+                this.currentIndex = index;
+                const q = this.questions[index];
+
+                // Badges
+                document.getElementById('cbt-question-number-badge').innerText = `Soal ${index + 1} dari ${this.questions.length}`;
+                document.getElementById('cbt-question-category').innerText = q.category.replace('_', ' ');
+                document.getElementById('cbt-question-level').innerText = q.difficulty;
+
+                // Stimulus
+                const stimulusBox = document.getElementById('cbt-stimulus-container');
+                if (q.stimulus) {
+                    stimulusBox.innerHTML = `<strong>Stimulus:</strong><br>${q.stimulus}`;
+                    stimulusBox.classList.remove('hidden');
+                } else {
+                    stimulusBox.classList.add('hidden');
+                }
+
+                // Question Text
+                document.getElementById('cbt-question-text').innerText = q.question;
+
+                // Options Render
+                const optionsBox = document.getElementById('cbt-options-container');
+                optionsBox.innerHTML = '';
+
+                const letters = ['A', 'B', 'C', 'D'];
+                q.options.forEach((optText, optIdx) => {
+                    const isSelected = this.userAnswers[index] === optIdx;
+                    const optBtn = document.createElement('div');
+                    optBtn.onclick = () => this.selectOption(optIdx);
+                    optBtn.className = `p-3.5 rounded-xl border cursor-pointer transition flex items-start gap-3 ${
+                        isSelected 
+                            ? 'bg-brand-50 border-brand-500 text-brand-900 font-semibold shadow-sm' 
+                            : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-800'
+                    }`;
+
+                    optBtn.innerHTML = `
+                        <span class="w-6 h-6 rounded-lg font-bold text-xs flex items-center justify-center shrink-0 ${
+                            isSelected ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 border border-slate-300'
+                        }">${letters[optIdx]}</span>
+                        <span class="text-xs sm:text-sm leading-relaxed">${optText}</span>
+                    `;
+                    optionsBox.appendChild(optBtn);
+                });
+
+                // Flag Button state
+                const flagBtn = document.getElementById('cbt-flag-btn');
+                const flagText = document.getElementById('cbt-flag-text');
+                if (this.flagged[index]) {
+                    flagBtn.className = "px-3 py-1.5 border border-amber-400 bg-amber-50 text-amber-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5";
+                    flagText.innerText = "Ditandai Ragu-ragu";
+                } else {
+                    flagBtn.className = "px-3 py-1.5 border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold rounded-xl transition flex items-center gap-1.5";
+                    flagText.innerText = "Tandai Ragu-ragu";
+                }
+
+                // Practice Explanation toggle
+                const expBox = document.getElementById('cbt-explanation-box');
+                if (this.mode === 'PRACTICE' && this.practiceConfig.instantExplanation && this.userAnswers[index] !== undefined) {
+                    document.getElementById('cbt-explanation-text').innerText = q.explanation;
+                    expBox.classList.remove('hidden');
+                } else {
+                    expBox.classList.add('hidden');
+                }
+
+                // Update Grid Button styles
+                this.updateGridHighlight();
+                lucide.createIcons();
+            },
+
+            selectOption(optIdx) {
+                this.userAnswers[this.currentIndex] = optIdx;
+                this.loadQuestion(this.currentIndex);
+                this.updateAnsweredSummary();
+            },
+
+            toggleFlag() {
+                this.flagged[this.currentIndex] = !this.flagged[this.currentIndex];
+                this.loadQuestion(this.currentIndex);
+            },
+
+            prevQuestion() {
+                if (this.currentIndex > 0) {
+                    this.loadQuestion(this.currentIndex - 1);
+                }
+            },
+
+            nextQuestion() {
+                if (this.currentIndex < this.questions.length - 1) {
+                    this.loadQuestion(this.currentIndex + 1);
+                }
+            },
+
+            renderQuestionGrid() {
+                const grid = document.getElementById('cbt-question-grid');
+                grid.innerHTML = '';
+
+                this.questions.forEach((_, idx) => {
+                    const btn = document.createElement('button');
+                    btn.id = `grid-btn-${idx}`;
+                    btn.onclick = () => this.loadQuestion(idx);
+                    btn.innerText = (idx + 1).toString().padStart(2, '0');
+                    grid.appendChild(btn);
+                });
+
+                this.updateGridHighlight();
+            },
+
+            updateGridHighlight() {
+                this.questions.forEach((_, idx) => {
+                    const btn = document.getElementById(`grid-btn-${idx}`);
+                    if (!btn) return;
+
+                    const isCurrent = idx === this.currentIndex;
+                    const isAnswered = this.userAnswers[idx] !== undefined;
+                    const isFlagged = this.flagged[idx];
+
+                    let base = "w-full py-2 rounded-xl text-xs font-bold border transition flex items-center justify-center ";
+
+                    if (isCurrent) {
+                        base += "bg-slate-900 text-white border-slate-900 ring-2 ring-brand-500 ";
+                    } else if (isFlagged) {
+                        base += "bg-amber-400 text-amber-950 border-amber-500 ";
+                    } else if (isAnswered) {
+                        base += "bg-emerald-600 text-white border-emerald-600 ";
+                    } else {
+                        base += "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 ";
+                    }
+
+                    btn.className = base;
+                });
+
+                this.updateAnsweredSummary();
+            },
+
+            updateAnsweredSummary() {
+                const count = Object.keys(this.userAnswers).length;
+                document.getElementById('cbt-answered-summary').innerText = `${count}/${this.questions.length}`;
+            },
+
+            openFinishModal() {
+                const answered = Object.keys(this.userAnswers).length;
+                const total = this.questions.length;
+                const unanswered = total - answered;
+                const flaggedCount = Object.values(this.flagged).filter(Boolean).length;
+
+                document.getElementById('finish-answered-count').innerText = answered;
+                document.getElementById('finish-unanswered-count').innerText = unanswered;
+                document.getElementById('finish-flagged-count').innerText = flaggedCount;
+
+                document.getElementById('modal-finish-exam').classList.remove('hidden');
+            },
+
+            closeFinishModal() {
+                document.getElementById('modal-finish-exam').classList.add('hidden');
+            },
+
+            autoSubmitTimeOut() {
+                this.closeFinishModal();
+                this.submitExam();
+            },
+
+            submitExam() {
+                if (this.timerInterval) clearInterval(this.timerInterval);
+                this.closeFinishModal();
+
+                // Compute Results
+                let correctCount = 0;
+                const categoryStats = {}; // { CAT: { correct: 0, total: 0 } }
+
+                this.questions.forEach((q, idx) => {
+                    if (!categoryStats[q.category]) {
+                        categoryStats[q.category] = { correct: 0, total: 0 };
+                    }
+                    categoryStats[q.category].total++;
+
+                    if (this.userAnswers[idx] === q.correctAnswer) {
+                        correctCount++;
+                        categoryStats[q.category].correct++;
+                    }
+                });
+
+                const totalQuestions = this.questions.length;
+                const wrongCount = Object.keys(this.userAnswers).length - correctCount;
+                const unansweredCount = totalQuestions - Object.keys(this.userAnswers).length;
+                const finalScore = Math.round((correctCount / totalQuestions) * 100);
+
+                const timeSpentSecs = this.totalExamSeconds - this.timeRemainingSeconds;
+                const minsSpent = Math.floor(timeSpentSecs / 60);
+                const secsSpent = timeSpentSecs % 60;
+                const durationSpentStr = `${minsSpent}m ${secsSpent}s`;
+
+                // Render Results
+                document.getElementById('res-username').innerText = appState.currentUser;
+                document.getElementById('res-time-spent').innerText = durationSpentStr;
+                document.getElementById('res-score-num').innerText = finalScore;
+                document.getElementById('res-correct-count').innerText = correctCount;
+                document.getElementById('res-wrong-count').innerText = wrongCount < 0 ? 0 : wrongCount;
+                document.getElementById('res-unanswered-count').innerText = unansweredCount;
+
+                // Render Competency Bars
+                const barsContainer = document.getElementById('res-competency-bars');
+                barsContainer.innerHTML = '';
+
+                const weakCategories = [];
+
+                for (const [catName, stat] of Object.entries(categoryStats)) {
+                    const pct = Math.round((stat.correct / stat.total) * 100) || 0;
+                    if (pct < 70) weakCategories.push({ name: catName, pct });
+
+                    const barItem = document.createElement('div');
+                    barItem.className = "space-y-1";
+                    barItem.innerHTML = `
+                        <div class="flex justify-between text-xs font-bold text-slate-700">
+                            <span>${catName.replace('_', ' ')} (${stat.correct}/${stat.total})</span>
+                            <span class="${pct >= 75 ? 'text-emerald-600' : pct >= 60 ? 'text-amber-600' : 'text-red-600'}">${pct}%</span>
+                        </div>
+                        <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-1000 ${
+                                pct >= 75 ? 'bg-emerald-500' : pct >= 60 ? 'bg-amber-500' : 'bg-red-500'
+                            }" style="width: ${pct}%"></div>
+                        </div>
+                    `;
+                    barsContainer.appendChild(barItem);
+                }
+
+                // Render Weak Area Recommendations
+                const weakList = document.getElementById('res-weak-areas-list');
+                const recText = document.getElementById('res-recommendation-text');
+                weakList.innerHTML = '';
+
+                if (weakCategories.length === 0) {
+                    weakList.innerHTML = `<p class="font-bold text-emerald-700">🎉 Luar biasa! Kemampuan Anda sudah sangat merata di seluruh kompetensi.</p>`;
+                    recText.innerText = "Pertahankan konsistensi latihan Anda. Cobalah mengerjakan simulasi penuh kembali untuk memperkuat ketahanan fisik dan konsentrasi ujian 90 menit.";
+                } else {
+                    weakCategories.forEach(w => {
+                        const li = document.createElement('div');
+                        li.className = "p-2 rounded-lg bg-white/70 border border-amber-200 font-semibold flex items-center gap-2";
+                        li.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i><span><strong>${w.name.replace('_', ' ')}:</strong> Capaian ${w.pct}% (Perlu Penguatan)</span>`;
+                        weakList.appendChild(li);
+                    });
+
+                    recText.innerText = "Kamu sudah cukup baik dalam memahami konsep dasar. Coba perkuat latihan pada kompetensi yang bernilai di bawah 70% dengan memprioritaskan soal berbasis kasus (HOTS) dan analisis data.";
+                }
+
+                // Render Full Review / Pembahasan Section
+                const reviewBox = document.getElementById('res-review-container');
+                reviewBox.innerHTML = '';
+
+                const letters = ['A', 'B', 'C', 'D'];
+
+                this.questions.forEach((q, idx) => {
+                    const userAns = this.userAnswers[idx];
+                    const isCorrect = userAns === q.correctAnswer;
+
+                    const qReview = document.createElement('div');
+                    qReview.className = `p-5 rounded-2xl border text-xs space-y-3 ${
+                        isCorrect ? 'bg-emerald-50/40 border-emerald-200' : 'bg-red-50/40 border-red-200'
+                    }`;
+
+                    let optionsHtml = '';
+                    q.options.forEach((opt, oIdx) => {
+                        let optStyle = "p-2.5 rounded-xl border bg-white border-slate-200 text-slate-700";
+                        if (oIdx === q.correctAnswer) {
+                            optStyle = "p-2.5 rounded-xl border bg-emerald-100 border-emerald-300 text-emerald-900 font-bold flex items-center justify-between";
+                        } else if (oIdx === userAns && !isCorrect) {
+                            optStyle = "p-2.5 rounded-xl border bg-red-100 border-red-300 text-red-900 font-bold flex items-center justify-between";
+                        }
+
+                        optionsHtml += `
+                            <div class="${optStyle}">
+                                <span>${letters[oIdx]}. ${opt}</span>
+                                ${oIdx === q.correctAnswer ? '<span class="text-emerald-700">✓ Jawaban Benar</span>' : ''}
+                                ${oIdx === userAns && !isCorrect ? '<span class="text-red-700">❌ Jawaban Anda</span>' : ''}
+                            </div>
+                        `;
+                    });
+
+                    qReview.innerHTML = `
+                        <div class="flex items-center justify-between font-bold border-b border-slate-200/60 pb-2">
+                            <span class="text-slate-900">Soal ${idx + 1} • ${q.category.replace('_', ' ')} (${q.difficulty})</span>
+                            <span class="${isCorrect ? 'text-emerald-700 font-extrabold' : 'text-red-700 font-extrabold'}">
+                                ${isCorrect ? '✅ BENAR' : '❌ BELUM TEPAT'}
+                            </span>
+                        </div>
+                        ${q.stimulus ? `<div class="p-3 bg-white/80 rounded-xl border text-slate-600 font-serif">${q.stimulus}</div>` : ''}
+                        <p class="font-bold text-slate-900 text-sm">${q.question}</p>
+                        <div class="space-y-2">${optionsHtml}</div>
+                        <div class="p-3 bg-blue-50/80 rounded-xl border border-blue-200 text-slate-700 leading-relaxed">
+                            <strong class="text-blue-900 block mb-1">Pembahasan:</strong>
+                            ${q.explanation}
+                        </div>
+                    `;
+                    reviewBox.appendChild(qReview);
+                });
+
+                // Save Record to LocalStorage
+                appState.saveExamToHistory({
+                    date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                    modeName: this.mode === 'FULL_SIMULATION' ? 'Simulasi Penuh' : this.mode === 'DIAGNOSTIC' ? 'Diagnostic Test' : `Latihan (${this.practiceConfig.category})`,
+                    score: finalScore,
+                    totalQuestions,
+                    durationSpent: durationSpentStr
+                });
+
+                appState.navigateTo('cbt-result');
+                lucide.createIcons();
+            }
+        };
+
+        // HISTORY ENGINE
+        const historyEngine = {
+            clearHistory() {
+                if (confirm("Apakah Anda yakin ingin menghapus seluruh riwayat pengerjaan simulasi?")) {
+                    appState.history = [];
+                    localStorage.removeItem('akgtk_history');
+                    appState.updateHistoryStats();
+                }
+            }
+        };
+
+        /*
+         * INITIALIZATION ON WINDOW LOAD
+         */
+        window.onload = function() {
+            appState.init();
+        };
+    </script>
+</body>
+</html>
